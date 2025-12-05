@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled | Shakil Hosen</title>
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="alternate icon" href="../favicon.ico">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .cancel-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: #ffc107;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cancel-icon svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+        }
+        h1 {
+            color: #ffc107;
+            margin: 0 0 20px 0;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 1px solid #ffeaa7;
+        }
+        .transaction-details {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        .transaction-details h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        .detail-value {
+            color: #212529;
+        }
+        .btn {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cancel-icon">
+            <svg viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+        
+        <h1>Payment Cancelled</h1>
+        <p class="subtitle">You have cancelled the payment transaction.</p>
+        
+        <div class="info-box">
+            <p style="margin: 0;">
+                <strong>No charges have been made.</strong> Your payment was cancelled before processing. 
+                You can try again whenever you're ready.
+            </p>
+        </div>
+        
+        <div class="transaction-details">
+            <h3>Transaction Details</h3>
+            <div class="detail-row">
+                <span class="detail-label">Transaction ID:</span>
+                <span class="detail-value" id="tran_id">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Amount:</span>
+                <span class="detail-value" id="amount">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Payment Status:</span>
+                <span class="detail-value" id="status" style="color: #ffc107; font-weight: 600;">Cancelled</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date & Time:</span>
+                <span class="detail-value" id="datetime">-</span>
+            </div>
+        </div>
+        
+        <p style="color: #6c757d; margin: 20px 0;">
+            If you cancelled by mistake or want to complete the payment, you can start a new transaction.
+        </p>
+        
+        <div>
+            <a href="/payments/" class="btn">Make a Payment</a>
+            <a href="/" class="btn btn-secondary">Go to Home</a>
+        </div>
+        
+        <footer>
+            <p>&copy; 2025 Shakil Hosen | Powered by SSLCommerz Bangladesh</p>
+            <p style="margin-top: 10px;">
+                Questions? Contact: <a href="mailto:shakil@bnwp.org" style="color: #007bff;">shakil@bnwp.org</a>
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        // Parse URL parameters
+        function getUrlParameters() {
+            const params = new URLSearchParams(window.location.search);
+            const data = {};
+            for (const [key, value] of params) {
+                data[key] = value;
+            }
+            return data;
+        }
+        
+        // Display transaction details
+        function displayTransactionDetails() {
+            const params = getUrlParameters();
+            
+            // Update transaction details
+            if (params.tran_id) {
+                document.getElementById('tran_id').textContent = params.tran_id;
+            }
+            
+            if (params.amount) {
+                document.getElementById('amount').textContent = 'BDT ' + parseFloat(params.amount).toFixed(2);
+            }
+            
+            if (params.status) {
+                document.getElementById('status').textContent = params.status;
+            }
+            
+            // Set current date/time
+            const now = new Date();
+            const datetime = params.tran_date || now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('datetime').textContent = datetime;
+            
+            // Store cancelled transaction in localStorage for record keeping
+            const transactions = JSON.parse(localStorage.getItem('cancelled_transactions') || '[]');
+            transactions.push({
+                ...params,
+                datetime: datetime,
+                status: 'cancelled'
+            });
+            localStorage.setItem('cancelled_transactions', JSON.stringify(transactions));
+        }
+        
+        // Load transaction details on page load
+        window.addEventListener('DOMContentLoaded', displayTransactionDetails);
+    </script>
+</body>
+</html>

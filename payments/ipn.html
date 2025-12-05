@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPN Handler | Shakil Hosen</title>
+    <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+    <h1>IPN Handler</h1>
+    <p>This page handles Instant Payment Notifications from SSLCommerz.</p>
+    
+    <script>
+        // IPN Handler for SSLCommerz
+        // This receives payment notifications from SSLCommerz server
+        
+        // Parse URL parameters
+        function getUrlParameters() {
+            const params = new URLSearchParams(window.location.search);
+            const data = {};
+            for (const [key, value] of params) {
+                data[key] = value;
+            }
+            return data;
+        }
+        
+        // Process IPN notification
+        function processIPN() {
+            const params = getUrlParameters();
+            
+            // Log IPN data
+            console.log('IPN Notification Received:', params);
+            
+            // Store IPN data in localStorage
+            const ipnLogs = JSON.parse(localStorage.getItem('ipn_logs') || '[]');
+            ipnLogs.push({
+                ...params,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('ipn_logs', JSON.stringify(ipnLogs));
+            
+            // In a real implementation, this should:
+            // 1. Verify the IPN signature
+            // 2. Validate the transaction with SSLCommerz
+            // 3. Update your database with payment status
+            // 4. Send confirmation emails
+            // 5. Fulfill the order/service
+            
+            // Note: Since this is a static site, you would typically handle
+            // IPN on a server-side endpoint
+        }
+        
+        // Process IPN on page load
+        window.addEventListener('DOMContentLoaded', processIPN);
+    </script>
+</body>
+</html>

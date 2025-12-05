@@ -12,4 +12,10 @@
             <image:caption>Shakil Hosen - EEE Student, Wikimedia Steward and Technology Enthusiast from Bangladesh</image:caption>
         </image:image>
     </url>
+    <url>
+        <loc>https://shakil.live/payments/</loc>
+        <lastmod>2025-01-02</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
 </urlset>
