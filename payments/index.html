@@ -240,6 +240,11 @@
         </header>
         
         <main>
+            <div class="alert alert-warning">
+                <strong>⚠️ DEMO/SANDBOX ONLY:</strong> This is a demonstration implementation running in sandbox mode. 
+                For production use, you MUST implement server-side payment processing. Never expose store credentials in client-side code.
+            </div>
+            
             <div class="alert alert-info">
                 <strong>Sandbox Environment:</strong> This payment portal is currently running in sandbox/test mode. No real money will be charged.
             </div>
@@ -379,7 +384,10 @@
                 // Prepare payment data for SSLCommerz
                 const paymentData = {
                     store_id: SSLCOMMERZ_CONFIG.store_id,
-                    store_passwd: 'bangl69327680e8652@ssl', // Note: In production, this should be on server-side
+                    // ⚠️ SECURITY WARNING: Store password is hardcoded for DEMO purposes only
+                    // In production, this MUST be handled on a secure backend server
+                    // NEVER expose credentials in client-side code
+                    store_passwd: 'bangl69327680e8652@ssl',
                     total_amount: parseFloat(data.amount).toFixed(2),
                     currency: 'BDT',
                     tran_id: tran_id,
