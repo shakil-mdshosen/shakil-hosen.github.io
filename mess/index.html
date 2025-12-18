@@ -284,6 +284,101 @@
             opacity: 1;
         }
         
+        /* Password Protection Overlay */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .password-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .password-modal h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .password-modal p {
+            color: #6c757d;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+        
+        .password-input-group {
+            margin-bottom: 20px;
+        }
+        
+        .password-modal input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .password-modal input[type="password"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .password-submit-btn {
+            width: 100%;
+            padding: 12px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .password-submit-btn:hover {
+            background: #0056b3;
+        }
+        
+        .password-error {
+            color: #dc3545;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .password-lock-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .content-hidden {
+            display: none !important;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -310,11 +405,41 @@
                 margin-left: 0;
                 font-size: 0.85rem;
             }
+            
+            .password-modal {
+                padding: 30px 20px;
+            }
+            
+            .password-modal h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Password Protection Overlay -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-modal">
+            <div class="password-lock-icon">🔒</div>
+            <h2>Protected Page</h2>
+            <p>এই পেজ দেখতে পাসওয়ার্ড প্রয়োজন</p>
+            <div class="password-input-group">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    placeholder="পাসওয়ার্ড লিখুন"
+                    autocomplete="off"
+                    maxlength="10"
+                />
+            </div>
+            <button class="password-submit-btn" onclick="checkPassword()">Submit</button>
+            <div class="password-error" id="passwordError">
+                ❌ পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।
+            </div>
+        </div>
+    </div>
+    
+    <div class="container content-hidden" id="mainContent">
         <!-- Breadcrumb Navigation -->
         <nav class="breadcrumb" aria-label="Breadcrumb">
             <a href="/">Home</a> > <span>Mess Search</span>
@@ -392,6 +517,59 @@
     </div>
 
     <script>
+        // Password Protection
+        const CORRECT_PASSWORD = '1357';
+        const SESSION_KEY = 'messPageAuthenticated';
+        
+        // Check if already authenticated in this session
+        window.addEventListener('DOMContentLoaded', function() {
+            const isAuthenticated = sessionStorage.getItem(SESSION_KEY);
+            if (isAuthenticated === 'true') {
+                unlockPage();
+            }
+            
+            // Add Enter key support for password input
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+            
+            // Only load sheet data after authentication
+            if (isAuthenticated === 'true') {
+                loadSheetData();
+            }
+        });
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            const error = document.getElementById('passwordError');
+            const password = input.value;
+            
+            if (password === CORRECT_PASSWORD) {
+                // Correct password - authenticate
+                sessionStorage.setItem(SESSION_KEY, 'true');
+                unlockPage();
+                loadSheetData();
+            } else {
+                // Wrong password - show error
+                error.style.display = 'block';
+                input.value = '';
+                input.focus();
+                
+                // Shake animation
+                input.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+            }
+        }
+        
+        function unlockPage() {
+            document.getElementById('passwordOverlay').style.display = 'none';
+            document.getElementById('mainContent').classList.remove('content-hidden');
+        }
+        
         // Google Sheets configuration
         // To use this, the Google Sheet must be published to the web
         // The sheet ID from: https://docs.google.com/spreadsheets/d/1FtWwq3g9UMQjMhFPamVVhrfHSP8VhQAZ/edit
@@ -413,11 +591,6 @@
             ['কামাল', '', '', '', '', '', '', '5500', '', '', '', '', '55', '', '2750', '2750'],
             ['সালাম', '', '', '', '', '', '', '7000', '', '', '', '', '70', '', '3500', '3500']
         ];
-        
-        // Load data when page loads
-        window.addEventListener('DOMContentLoaded', function() {
-            loadSheetData();
-        });
         
         async function loadSheetData() {
             const loadingIndicator = document.getElementById('loadingIndicator');
