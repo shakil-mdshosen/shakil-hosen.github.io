@@ -432,7 +432,7 @@
                     maxlength="10"
                 />
             </div>
-            <button class="password-submit-btn" onclick="checkPassword()">Submit</button>
+            <button class="password-submit-btn" id="passwordSubmitBtn">Submit</button>
             <div class="password-error" id="passwordError">
                 ❌ পাসওয়ার্ড ভুল হয়েছে। আবার চেষ্টা করুন।
             </div>
@@ -534,6 +534,9 @@
                     checkPassword();
                 }
             });
+            
+            // Add click handler for submit button
+            document.getElementById('passwordSubmitBtn').addEventListener('click', checkPassword);
             
             // Only load sheet data after authentication
             if (isAuthenticated === 'true') {
