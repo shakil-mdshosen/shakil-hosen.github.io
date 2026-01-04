@@ -612,7 +612,8 @@
         
         // Google Sheets configuration
         // To use this, the Google Sheet must be published to the web
-        // The published sheet URL: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w/pubhtml
+        // Published sheet ID from: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w/pubhtml
+        // CSV endpoint: https://docs.google.com/spreadsheets/d/e/{SHEET_ID}/pub?output=csv&gid=0
         const SHEET_ID = '2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w';
         const SHEET_NAME = 'Main';
         
@@ -736,6 +737,38 @@
             });
         }
         
+        // Helper function to create a table row from data
+        function createTableRow(row) {
+            const tr = document.createElement('tr');
+            
+            // Name (column A, index 0)
+            const tdName = document.createElement('td');
+            tdName.textContent = row[0] || '';
+            tr.appendChild(tdName);
+            
+            // Total Deposit (column H, index 7)
+            const tdDeposit = document.createElement('td');
+            tdDeposit.textContent = row[7] || '0';
+            tr.appendChild(tdDeposit);
+            
+            // Total Meals (column M, index 12)
+            const tdMeals = document.createElement('td');
+            tdMeals.textContent = row[12] || '0';
+            tr.appendChild(tdMeals);
+            
+            // Total Expense (column O, index 14)
+            const tdExpense = document.createElement('td');
+            tdExpense.textContent = row[14] || '0';
+            tr.appendChild(tdExpense);
+            
+            // Remaining (column P, index 15)
+            const tdRemaining = document.createElement('td');
+            tdRemaining.textContent = row[15] || '0';
+            tr.appendChild(tdRemaining);
+            
+            return tr;
+        }
+        
         function searchRecord() {
             const nameSelect = document.getElementById('nameSelect');
             const selectedName = nameSelect.value;
@@ -770,34 +803,7 @@
             resultBody.innerHTML = '';
             
             matchedRows.forEach(row => {
-                const tr = document.createElement('tr');
-                
-                // Name (column A, index 0)
-                const tdName = document.createElement('td');
-                tdName.textContent = row[0] || '';
-                tr.appendChild(tdName);
-                
-                // Total Deposit (column H, index 7)
-                const tdDeposit = document.createElement('td');
-                tdDeposit.textContent = row[7] || '0';
-                tr.appendChild(tdDeposit);
-                
-                // Total Meals (column M, index 12)
-                const tdMeals = document.createElement('td');
-                tdMeals.textContent = row[12] || '0';
-                tr.appendChild(tdMeals);
-                
-                // Total Expense (column O, index 14)
-                const tdExpense = document.createElement('td');
-                tdExpense.textContent = row[14] || '0';
-                tr.appendChild(tdExpense);
-                
-                // Remaining (column P, index 15)
-                const tdRemaining = document.createElement('td');
-                tdRemaining.textContent = row[15] || '0';
-                tr.appendChild(tdRemaining);
-                
-                resultBody.appendChild(tr);
+                resultBody.appendChild(createTableRow(row));
             });
             
             resultSection.style.display = 'block';
@@ -823,34 +829,7 @@
             resultBody.innerHTML = '';
             
             sheetData.forEach(row => {
-                const tr = document.createElement('tr');
-                
-                // Name (column A, index 0)
-                const tdName = document.createElement('td');
-                tdName.textContent = row[0] || '';
-                tr.appendChild(tdName);
-                
-                // Total Deposit (column H, index 7)
-                const tdDeposit = document.createElement('td');
-                tdDeposit.textContent = row[7] || '0';
-                tr.appendChild(tdDeposit);
-                
-                // Total Meals (column M, index 12)
-                const tdMeals = document.createElement('td');
-                tdMeals.textContent = row[12] || '0';
-                tr.appendChild(tdMeals);
-                
-                // Total Expense (column O, index 14)
-                const tdExpense = document.createElement('td');
-                tdExpense.textContent = row[14] || '0';
-                tr.appendChild(tdExpense);
-                
-                // Remaining (column P, index 15)
-                const tdRemaining = document.createElement('td');
-                tdRemaining.textContent = row[15] || '0';
-                tr.appendChild(tdRemaining);
-                
-                resultBody.appendChild(tr);
+                resultBody.appendChild(createTableRow(row));
             });
             
             resultSection.style.display = 'block';
