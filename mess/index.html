@@ -137,38 +137,6 @@
             cursor: not-allowed;
         }
         
-        .show-all-btn {
-            padding: 12px 30px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        .show-all-btn:hover {
-            background: #218838;
-        }
-        
-        .show-all-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .button-group button {
-            flex: 1;
-            min-width: 150px;
-        }
-        
         .loading {
             text-align: center;
             padding: 20px;
@@ -496,14 +464,9 @@
                         </select>
                     </div>
                     
-                    <div class="button-group">
-                        <button type="button" class="search-btn" id="searchBtn" onclick="searchRecord()">
-                            খুঁজুন
-                        </button>
-                        <button type="button" class="show-all-btn" id="showAllBtn" onclick="showAllData()">
-                            সব ডেটা দেখুন
-                        </button>
-                    </div>
+                    <button type="button" class="search-btn" id="searchBtn" onclick="searchRecord()">
+                        খুঁজুন
+                    </button>
                 </form>
             </div>
             
@@ -612,14 +575,13 @@
         
         // Google Sheets configuration
         // To use this, the Google Sheet must be published to the web
-        // Published sheet ID from: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w/pubhtml
-        // CSV endpoint: https://docs.google.com/spreadsheets/d/e/{SHEET_ID}/pub?gid=0&single=true&output=csv
-        const SHEET_ID = '2PACX-1vQS4cdU2VvkSZ5TvIfoaXFLb9BKszCyceomiAXDR3-YH5LJoY_NPIoXhPGRj6MplJs7us25s7Df8g_k';
+        // The sheet ID from: https://docs.google.com/spreadsheets/d/1FtWwq3g9UMQjMhFPamVVhrfHSP8VhQAZ/edit
+        const SHEET_ID = '19rKGy_Kkle0fOilUwDhiP4bCEKA2UgpAN1lzv2YRNDE';
         const SHEET_NAME = 'Main';
         
         // For the sheet to work, it needs to be published:
-        // File > Share > Publish to web > Entire Document > Web page > Publish
-        // The gid=0 parameter refers to the first sheet (change if needed)
+        // File > Share > Publish to web > Select "Main" sheet > Publish as CSV
+        // Then use: https://docs.google.com/spreadsheets/d/SHEET_ID/gviz/tq?tqx=out:csv&sheet=SHEET_NAME
         
         let sheetData = [];
         let usingSampleData = false;
@@ -644,13 +606,12 @@
             
             try {
                 // Using Google Sheets CSV export (requires sheet to be published)
-                // Format: /pub?gid=0&single=true&output=csv works better for published sheets
-                const csvUrl = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=0&single=true&output=csv`;
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
                 
                 const response = await fetch(csvUrl);
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to load data from Google Sheets. Status: ${response.status}`);
+                    throw new Error('Failed to load data from Google Sheets.');
                 }
                 
                 const csvText = await response.text();
@@ -738,38 +699,6 @@
             });
         }
         
-        // Helper function to create a table row from data
-        function createTableRow(row) {
-            const tr = document.createElement('tr');
-            
-            // Name (column A, index 0)
-            const tdName = document.createElement('td');
-            tdName.textContent = row[0] || '';
-            tr.appendChild(tdName);
-            
-            // Total Deposit (column H, index 7)
-            const tdDeposit = document.createElement('td');
-            tdDeposit.textContent = row[7] || '0';
-            tr.appendChild(tdDeposit);
-            
-            // Total Meals (column M, index 12)
-            const tdMeals = document.createElement('td');
-            tdMeals.textContent = row[12] || '0';
-            tr.appendChild(tdMeals);
-            
-            // Total Expense (column O, index 14)
-            const tdExpense = document.createElement('td');
-            tdExpense.textContent = row[14] || '0';
-            tr.appendChild(tdExpense);
-            
-            // Remaining (column P, index 15)
-            const tdRemaining = document.createElement('td');
-            tdRemaining.textContent = row[15] || '0';
-            tr.appendChild(tdRemaining);
-            
-            return tr;
-        }
-        
         function searchRecord() {
             const nameSelect = document.getElementById('nameSelect');
             const selectedName = nameSelect.value;
@@ -804,33 +733,34 @@
             resultBody.innerHTML = '';
             
             matchedRows.forEach(row => {
-                resultBody.appendChild(createTableRow(row));
-            });
-            
-            resultSection.style.display = 'block';
-        }
-        
-        function showAllData() {
-            const resultSection = document.getElementById('resultSection');
-            const noResult = document.getElementById('noResult');
-            const errorMessage = document.getElementById('errorMessage');
-            const resultBody = document.getElementById('resultBody');
-            
-            // Hide all result sections
-            resultSection.style.display = 'none';
-            noResult.style.display = 'none';
-            errorMessage.style.display = 'none';
-            
-            if (sheetData.length === 0) {
-                noResult.style.display = 'block';
-                return;
-            }
-            
-            // Display all data
-            resultBody.innerHTML = '';
-            
-            sheetData.forEach(row => {
-                resultBody.appendChild(createTableRow(row));
+                const tr = document.createElement('tr');
+                
+                // Name (column A, index 0)
+                const tdName = document.createElement('td');
+                tdName.textContent = row[0] || '';
+                tr.appendChild(tdName);
+                
+                // Total Deposit (column H, index 7)
+                const tdDeposit = document.createElement('td');
+                tdDeposit.textContent = row[7] || '0';
+                tr.appendChild(tdDeposit);
+                
+                // Total Meals (column M, index 12)
+                const tdMeals = document.createElement('td');
+                tdMeals.textContent = row[12] || '0';
+                tr.appendChild(tdMeals);
+                
+                // Total Expense (column O, index 14)
+                const tdExpense = document.createElement('td');
+                tdExpense.textContent = row[14] || '0';
+                tr.appendChild(tdExpense);
+                
+                // Remaining (column P, index 15)
+                const tdRemaining = document.createElement('td');
+                tdRemaining.textContent = row[15] || '0';
+                tr.appendChild(tdRemaining);
+                
+                resultBody.appendChild(tr);
             });
             
             resultSection.style.display = 'block';
