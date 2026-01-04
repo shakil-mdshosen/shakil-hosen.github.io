@@ -613,13 +613,13 @@
         // Google Sheets configuration
         // To use this, the Google Sheet must be published to the web
         // Published sheet ID from: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w/pubhtml
-        // CSV endpoint: https://docs.google.com/spreadsheets/d/e/{SHEET_ID}/pub?output=csv&gid=0
+        // CSV endpoint: https://docs.google.com/spreadsheets/d/e/{SHEET_ID}/pub?gid=0&single=true&output=csv
         const SHEET_ID = '2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w';
         const SHEET_NAME = 'Main';
         
         // For the sheet to work, it needs to be published:
-        // File > Share > Publish to web > Select "Main" sheet > Publish as CSV
-        // Then use: https://docs.google.com/spreadsheets/d/SHEET_ID/gviz/tq?tqx=out:csv&sheet=SHEET_NAME
+        // File > Share > Publish to web > Entire Document > Web page > Publish
+        // The gid=0 parameter refers to the first sheet (change if needed)
         
         let sheetData = [];
         let usingSampleData = false;
@@ -644,12 +644,13 @@
             
             try {
                 // Using Google Sheets CSV export (requires sheet to be published)
-                const csvUrl = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv&gid=0`;
+                // Format: /pub?gid=0&single=true&output=csv works better for published sheets
+                const csvUrl = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=0&single=true&output=csv`;
                 
                 const response = await fetch(csvUrl);
                 
                 if (!response.ok) {
-                    throw new Error('Failed to load data from Google Sheets.');
+                    throw new Error(`Failed to load data from Google Sheets. Status: ${response.status}`);
                 }
                 
                 const csvText = await response.text();

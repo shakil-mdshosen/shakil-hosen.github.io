@@ -37,14 +37,17 @@ To connect your own Google Sheet:
 1. **Publish the Google Sheet to the web:**
    - Open your Google Sheet
    - Go to **File** > **Share** > **Publish to web**
-   - In the dialog, select **Entire Document**
-   - Choose **Web page** or **CSV** format
+   - In the dialog, select **Entire Document** (or specific sheet if needed)
+   - Choose **Web page** format (NOT CSV - the page will convert it)
    - Click **Publish**
    - Confirm by clicking **OK**
+   - Copy the published URL (it will look like: `https://docs.google.com/spreadsheets/d/e/2PACX-.../pubhtml`)
 
 2. **Update the Sheet ID:**
-   - The sheet ID is already configured in the code: `1FtWwq3g9UMQjMhFPamVVhrfHSP8VhQAZ`
-   - If you need to use a different sheet, update the `SHEET_ID` constant in the JavaScript code
+   - From the published URL, extract the Sheet ID (the long string after `/d/e/` and before `/pubhtml`)
+   - Example: From `https://docs.google.com/spreadsheets/d/e/2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w/pubhtml`
+   - The Sheet ID is: `2PACX-1vQzFaoeHgpSK3XO1W97Iy5sQTjSUSgNxCYNVCrpdyW7_IwguzUXTU9FGhCQXwz0-w`
+   - Update the `SHEET_ID` constant in the JavaScript code (line 617 in index.html)
 
 3. **Sheet Structure:**
    - The page expects data in a sheet named "Main"
@@ -61,8 +64,14 @@ To connect your own Google Sheet:
 
 The page uses Google Sheets CSV export to fetch data:
 ```
-https://docs.google.com/spreadsheets/d/SHEET_ID/gviz/tq?tqx=out:csv&sheet=SHEET_NAME
+https://docs.google.com/spreadsheets/d/e/SHEET_ID/pub?gid=0&single=true&output=csv
 ```
+
+Where:
+- `SHEET_ID` is the published sheet ID (starts with "2PACX-" for published sheets)
+- `gid=0` refers to the first sheet/tab (0-indexed, so 0 = first sheet, 1 = second sheet, etc.)
+- `single=true` ensures we get a single sheet
+- `output=csv` requests CSV format
 
 ### Fallback Mechanism
 
