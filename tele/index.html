@@ -249,6 +249,31 @@
             z-index: 100;
         }
         
+        /* Timer Display */
+        .timer-display {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            z-index: 100;
+            line-height: 1.5;
+        }
+        
+        .timer-display .timer-label {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 3px;
+        }
+        
+        .timer-display .timer-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+        }
+        
         /* Info Overlay */
         .info-overlay {
             position: absolute;
@@ -370,6 +395,17 @@
                 right: 10px;
                 font-size: 1rem;
                 padding: 12px 18px;
+            }
+            
+            .timer-display {
+                top: 80px;
+                left: 10px;
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+            
+            .timer-display .timer-value {
+                font-size: 0.9rem;
             }
             
             .breadcrumb {
@@ -649,6 +685,11 @@
             <div class="center-line" id="centerLine"></div>
             <div class="progress-bar" id="progressBar"></div>
             <div class="speed-indicator" id="speedIndicator">Speed: 3x</div>
+            <div class="timer-display" id="timerDisplay">
+                <div class="timer-label">TIMER</div>
+                <div class="timer-value" id="timerValue">00:00</div>
+                <div class="timer-value" id="estimatedTime">Est: --:--</div>
+            </div>
         </div>
         
         <div class="info-overlay" id="infoOverlay">
@@ -1510,7 +1551,10 @@
             mediaStream: null,
             audioChunks: [],
             backgroundColor: '#000000',
-            textColor: '#ffffff'
+            textColor: '#ffffff',
+            startTime: null,
+            elapsedTime: 0,
+            timerInterval: null
         };
         
         // Custom Scripts Storage
@@ -1552,7 +1596,10 @@
             bgColorPicker: document.getElementById('bgColorPicker'),
             textColorPicker: document.getElementById('textColorPicker'),
             resetBgColorBtn: document.getElementById('resetBgColorBtn'),
-            resetTextColorBtn: document.getElementById('resetTextColorBtn')
+            resetTextColorBtn: document.getElementById('resetTextColorBtn'),
+            timerDisplay: document.getElementById('timerDisplay'),
+            timerValue: document.getElementById('timerValue'),
+            estimatedTime: document.getElementById('estimatedTime')
         };
         
         // Initialize
@@ -1775,6 +1822,7 @@
             state.scrollPosition = 0;
             elements.content.style.top = '0px';
             updateProgress();
+            resetTimer();
             if (state.isPlaying) {
                 togglePlay();
             }
@@ -1788,6 +1836,7 @@
                 elements.playPauseBtn.innerHTML = '⏸ Pause';
                 elements.playPauseBtn.classList.add('active');
                 startScrolling();
+                startTimer();
                 // Auto-collapse settings when playing
                 if (!state.settingsCollapsed) {
                     toggleSettings();
@@ -1796,6 +1845,7 @@
                 elements.playPauseBtn.innerHTML = '▶ Play';
                 elements.playPauseBtn.classList.remove('active');
                 stopScrolling();
+                stopTimer();
             }
         }
         
@@ -1836,6 +1886,73 @@
                 const progress = (state.scrollPosition / maxScroll) * 100;
                 elements.progressBar.style.width = Math.min(progress, 100) + '%';
             }
+            
+            // Update timer
+            updateTimer();
+        }
+        
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+        
+        // Update Timer Display
+        function updateTimer() {
+            if (!state.isPlaying) {
+                return;
+            }
+            
+            // Calculate elapsed time
+            const currentTime = Date.now();
+            const elapsed = (currentTime - state.startTime) / 1000 + state.elapsedTime;
+            
+            // Update elapsed time display
+            elements.timerValue.textContent = formatTime(elapsed);
+            
+            // Calculate estimated time remaining
+            const contentHeight = elements.content.scrollHeight;
+            const displayHeight = elements.display.clientHeight;
+            const maxScroll = contentHeight - displayHeight;
+            
+            if (maxScroll > 0 && state.scrollPosition > 0) {
+                const remainingScroll = maxScroll - state.scrollPosition;
+                const scrollSpeed = state.speed * 0.5; // pixels per frame (50ms interval)
+                const estimatedFrames = remainingScroll / scrollSpeed;
+                const estimatedSeconds = (estimatedFrames * 50) / 1000; // 50ms per frame
+                
+                if (estimatedSeconds > 0 && isFinite(estimatedSeconds)) {
+                    elements.estimatedTime.textContent = `Est: ${formatTime(estimatedSeconds)}`;
+                } else {
+                    elements.estimatedTime.textContent = 'Est: 00:00';
+                }
+            } else {
+                elements.estimatedTime.textContent = 'Est: --:--';
+            }
+        }
+        
+        // Start Timer
+        function startTimer() {
+            state.startTime = Date.now();
+            updateTimer();
+        }
+        
+        // Stop Timer
+        function stopTimer() {
+            if (state.startTime) {
+                const currentTime = Date.now();
+                state.elapsedTime += (currentTime - state.startTime) / 1000;
+                state.startTime = null;
+            }
+        }
+        
+        // Reset Timer
+        function resetTimer() {
+            state.elapsedTime = 0;
+            state.startTime = null;
+            elements.timerValue.textContent = '00:00';
+            elements.estimatedTime.textContent = 'Est: --:--';
         }
         
         // Toggle Mirror
