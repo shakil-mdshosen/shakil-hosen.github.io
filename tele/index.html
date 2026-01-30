@@ -149,6 +149,42 @@
             cursor: pointer;
         }
         
+        input[type="color"] {
+            width: 50px;
+            height: 35px;
+            padding: 2px;
+            border: 2px solid #3a3a3a;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #3a3a3a;
+        }
+        
+        input[type="color"]:hover {
+            border-color: #007bff;
+        }
+        
+        #recordingStatus {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 0.9rem;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        button.recording {
+            background: #dc3545;
+            animation: recording-pulse 1s infinite;
+        }
+        
+        @keyframes recording-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
         /* Teleprompter Display */
         .teleprompter-display {
             flex: 1;
@@ -461,6 +497,18 @@
             </div>
             
             <div class="control-group">
+                <button id="recordBtn" aria-label="Record Voice">🎤 Record</button>
+                <span id="recordingStatus"></span>
+            </div>
+            
+            <div class="control-group">
+                <label for="bgColorPicker">Background:</label>
+                <input type="color" id="bgColorPicker" value="#000000" aria-label="Background color">
+                <label for="textColorPicker">Text:</label>
+                <input type="color" id="textColorPicker" value="#ffffff" aria-label="Text color">
+            </div>
+            
+            <div class="control-group">
                 <button id="infoBtn" aria-label="Help">ℹ Help</button>
             </div>
         </div>
@@ -484,6 +532,8 @@
                 <li><strong>Fullscreen:</strong> Enter/exit fullscreen mode</li>
                 <li><strong>Speed:</strong> Adjust scrolling speed (1-10)</li>
                 <li><strong>Font Size:</strong> Adjust text size (16-72px)</li>
+                <li><strong>Record:</strong> Start/stop voice recording (auto-downloads when stopped)</li>
+                <li><strong>Background/Text Colors:</strong> Customize display colors</li>
                 <li><strong>Scroll Wheel:</strong> Manual scrolling control</li>
                 <li><strong>Spacebar:</strong> Quick play/pause</li>
                 <li><strong>Settings Toggle:</strong> Click the gear icon to show/hide settings</li>
@@ -1325,7 +1375,12 @@
             isFullscreen: false,
             scrollInterval: null,
             settingsCollapsed: false,
-            editingScriptId: null
+            editingScriptId: null,
+            isRecording: false,
+            mediaRecorder: null,
+            audioChunks: [],
+            backgroundColor: '#000000',
+            textColor: '#ffffff'
         };
         
         // Custom Scripts Storage
@@ -1361,7 +1416,11 @@
             scriptContentInput: document.getElementById('scriptContentInput'),
             saveScriptBtn: document.getElementById('saveScriptBtn'),
             cancelScriptBtn: document.getElementById('cancelScriptBtn'),
-            customScriptsList: document.getElementById('customScriptsList')
+            customScriptsList: document.getElementById('customScriptsList'),
+            recordBtn: document.getElementById('recordBtn'),
+            recordingStatus: document.getElementById('recordingStatus'),
+            bgColorPicker: document.getElementById('bgColorPicker'),
+            textColorPicker: document.getElementById('textColorPicker')
         };
         
         // Initialize
@@ -1369,6 +1428,7 @@
             loadCustomScripts();
             updateScriptDropdown();
             loadScript(0);
+            loadColors();
             attachEventListeners();
             // Set initial state of settings toggle (settings visible by default)
             elements.settingsToggle.classList.add('active');
@@ -1721,6 +1781,96 @@
             }
         }
         
+        // Load Colors from localStorage
+        function loadColors() {
+            const savedBgColor = localStorage.getItem('teleprompterBgColor');
+            const savedTextColor = localStorage.getItem('teleprompterTextColor');
+            
+            if (savedBgColor) {
+                state.backgroundColor = savedBgColor;
+                elements.bgColorPicker.value = savedBgColor;
+                elements.display.style.backgroundColor = savedBgColor;
+            }
+            
+            if (savedTextColor) {
+                state.textColor = savedTextColor;
+                elements.textColorPicker.value = savedTextColor;
+                elements.content.style.color = savedTextColor;
+            }
+        }
+        
+        // Update Background Color
+        function updateBackgroundColor(color) {
+            state.backgroundColor = color;
+            elements.display.style.backgroundColor = color;
+            localStorage.setItem('teleprompterBgColor', color);
+        }
+        
+        // Update Text Color
+        function updateTextColor(color) {
+            state.textColor = color;
+            elements.content.style.color = color;
+            localStorage.setItem('teleprompterTextColor', color);
+        }
+        
+        // Toggle Recording
+        async function toggleRecording() {
+            if (!state.isRecording) {
+                // Start recording
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    state.mediaRecorder = new MediaRecorder(stream);
+                    state.audioChunks = [];
+                    
+                    state.mediaRecorder.addEventListener('dataavailable', event => {
+                        state.audioChunks.push(event.data);
+                    });
+                    
+                    state.mediaRecorder.addEventListener('stop', () => {
+                        const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                        const filename = `teleprompter-recording-${timestamp}.webm`;
+                        
+                        // Create download link
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = audioUrl;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        
+                        // Cleanup
+                        setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(audioUrl);
+                        }, 100);
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    });
+                    
+                    state.mediaRecorder.start();
+                    state.isRecording = true;
+                    elements.recordBtn.classList.add('recording');
+                    elements.recordBtn.textContent = '⏹ Stop';
+                    elements.recordingStatus.textContent = 'Recording...';
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    alert('Unable to access microphone. Please ensure you have granted microphone permissions.');
+                }
+            } else {
+                // Stop recording
+                if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+                    state.mediaRecorder.stop();
+                }
+                state.isRecording = false;
+                elements.recordBtn.classList.remove('recording');
+                elements.recordBtn.textContent = '🎤 Record';
+                elements.recordingStatus.textContent = '';
+            }
+        }
+        
         // Event Listeners
         function attachEventListeners() {
             // Settings Toggle
@@ -1766,6 +1916,18 @@
             // Font Size
             elements.fontSizeRange.addEventListener('input', (e) => {
                 updateFontSize(e.target.value);
+            });
+            
+            // Voice Recording
+            elements.recordBtn.addEventListener('click', toggleRecording);
+            
+            // Color Pickers
+            elements.bgColorPicker.addEventListener('input', (e) => {
+                updateBackgroundColor(e.target.value);
+            });
+            
+            elements.textColorPicker.addEventListener('input', (e) => {
+                updateTextColor(e.target.value);
             });
             
             // Info
