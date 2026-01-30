@@ -23,6 +23,8 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 - **Reset**: Return to the beginning of the script instantly
 - **Speed Control**: Fine-tune scrolling speed to match your reading pace
 - **Font Size Adjustment**: Customize text size from 16px to 72px
+- **Voice Recording**: Record your voice while reading scripts (auto-downloads when stopped)
+- **Color Customization**: Customize background and text colors for optimal visibility
 - **Mirror Mode**: Flip text horizontally for use with teleprompter mirrors
 - **Center Line Guide**: Visual reading guide at screen center
 - **Fullscreen Mode**: Distraction-free reading experience
@@ -49,8 +51,11 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 1. Open `/tele/` in your browser
 2. Select a script from the dropdown menu
 3. Adjust font size and speed to your preference
-4. Click Play to start auto-scrolling
-5. Use controls to pause, reset, or adjust settings as needed
+4. Customize background and text colors if desired
+5. Click Record to start voice recording (optional)
+6. Click Play to start auto-scrolling
+7. Use controls to pause, reset, or adjust settings as needed
+8. Click Record again to stop recording and download the audio file
 
 ## Keyboard Shortcuts
 
@@ -64,6 +69,9 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 - Adjust speed based on your speaking pace
 - Use fullscreen mode for presentations
 - Practice with different speeds to find your optimal reading pace
+- Record your voice to review your delivery later
+- Customize colors for better contrast based on your environment
+- Background and text color preferences are saved automatically
 
 ## Technical Details
 
