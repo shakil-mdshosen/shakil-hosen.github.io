@@ -686,7 +686,7 @@
             <div class="progress-bar" id="progressBar"></div>
             <div class="speed-indicator" id="speedIndicator">Speed: 3x</div>
             <div class="timer-display" id="timerDisplay">
-                <div class="timer-label">TIMER</div>
+                <div class="timer-label">ELAPSED</div>
                 <div class="timer-value" id="timerValue">00:00</div>
                 <div class="timer-value" id="estimatedTime">Est: --:--</div>
             </div>
@@ -1553,8 +1553,7 @@
             backgroundColor: '#000000',
             textColor: '#ffffff',
             startTime: null,
-            elapsedTime: 0,
-            timerInterval: null
+            elapsedTime: 0
         };
         
         // Custom Scripts Storage
@@ -1916,7 +1915,7 @@
             const displayHeight = elements.display.clientHeight;
             const maxScroll = contentHeight - displayHeight;
             
-            if (maxScroll > 0 && state.scrollPosition > 0) {
+            if (maxScroll > 0) {
                 const remainingScroll = maxScroll - state.scrollPosition;
                 const scrollSpeed = state.speed * 0.5; // pixels per frame (50ms interval)
                 const estimatedFrames = remainingScroll / scrollSpeed;
