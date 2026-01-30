@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>Teleprompter | Shakil Hosen</title>
+    <meta name="title" content="Teleprompter | Shakil Hosen">
+    <meta name="description" content="Professional teleprompter with multiple scripts and advanced features">
+    <meta name="author" content="Shakil Hosen">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://shakil.live/tele/">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="alternate icon" href="../favicon.ico">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        /* Header Controls */
+        .controls-header {
+            background: #2c2c2c;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group label {
+            color: #aaa;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        select, button, input[type="range"] {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        select {
+            background: #3a3a3a;
+            color: #fff;
+            min-width: 200px;
+        }
+        
+        select:hover {
+            background: #4a4a4a;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            font-weight: 500;
+            min-width: 80px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button.active {
+            background: #28a745;
+        }
+        
+        button.danger {
+            background: #dc3545;
+        }
+        
+        button.danger:hover {
+            background: #c82333;
+        }
+        
+        input[type="range"] {
+            width: 150px;
+            cursor: pointer;
+        }
+        
+        /* Teleprompter Display */
+        .teleprompter-display {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+        
+        .teleprompter-content {
+            position: absolute;
+            width: 100%;
+            padding: 50px;
+            text-align: center;
+            line-height: 2;
+            transition: top 0.1s linear;
+        }
+        
+        .teleprompter-content.mirrored {
+            transform: scaleX(-1);
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: #007bff;
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 100;
+        }
+        
+        /* Center Line */
+        .center-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            pointer-events: none;
+            display: none;
+        }
+        
+        .center-line.active {
+            display: block;
+        }
+        
+        /* Speed Indicator */
+        .speed-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+        
+        /* Info Overlay */
+        .info-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 200;
+            display: none;
+        }
+        
+        .info-overlay.active {
+            display: block;
+        }
+        
+        .info-overlay h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        
+        .info-overlay ul {
+            text-align: left;
+            margin: 20px 0;
+            list-style-position: inside;
+        }
+        
+        .info-overlay li {
+            margin: 10px 0;
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb {
+            color: #aaa;
+            font-size: 0.85rem;
+            flex-basis: 100%;
+        }
+        
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Fullscreen Mode */
+        .fullscreen .controls-header {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .fullscreen:hover .controls-header {
+            opacity: 1;
+        }
+        
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .controls-header {
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .control-group {
+                flex-basis: 100%;
+            }
+            
+            select {
+                min-width: 100%;
+            }
+            
+            .teleprompter-content {
+                padding: 20px;
+            }
+            
+            input[type="range"] {
+                width: 100%;
+            }
+        }
+        
+        /* Script Content Styles */
+        .script-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+        
+        .script-section {
+            margin-bottom: 40px;
+        }
+        
+        .script-section h3 {
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="controls-header">
+            <div class="breadcrumb">
+                <a href="../">Home</a> / Teleprompter
+            </div>
+            
+            <div class="control-group">
+                <label for="scriptSelect">Script:</label>
+                <select id="scriptSelect">
+                    <option value="0">Welcome Speech</option>
+                    <option value="1">Product Presentation</option>
+                    <option value="2">News Broadcast</option>
+                    <option value="3">Educational Lecture</option>
+                    <option value="4">Interview Questions</option>
+                    <option value="5">Motivational Speech</option>
+                    <option value="6">Technical Presentation</option>
+                    <option value="7">Event Hosting</option>
+                    <option value="8">YouTube Video Script</option>
+                    <option value="9">Public Announcement</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="playPauseBtn">▶ Play</button>
+                <button id="resetBtn">⟲ Reset</button>
+                <button id="mirrorBtn">⇄ Mirror</button>
+                <button id="centerLineBtn">━ Center Line</button>
+                <button id="fullscreenBtn">⛶ Fullscreen</button>
+            </div>
+            
+            <div class="control-group">
+                <label for="speedRange">Speed:</label>
+                <input type="range" id="speedRange" min="1" max="10" value="3" step="1">
+                <span id="speedValue">3</span>
+            </div>
+            
+            <div class="control-group">
+                <label for="fontSizeRange">Font Size:</label>
+                <input type="range" id="fontSizeRange" min="16" max="72" value="32" step="2">
+                <span id="fontSizeValue">32px</span>
+            </div>
+            
+            <div class="control-group">
+                <button id="infoBtn">ℹ Help</button>
+            </div>
+        </div>
+        
+        <div class="teleprompter-display" id="display">
+            <div class="teleprompter-content" id="content">
+                <div id="scriptContent"></div>
+            </div>
+            <div class="center-line" id="centerLine"></div>
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="speed-indicator" id="speedIndicator">Speed: 3x</div>
+        </div>
+        
+        <div class="info-overlay" id="infoOverlay">
+            <h2>Teleprompter Controls</h2>
+            <ul>
+                <li><strong>Play/Pause:</strong> Start or stop auto-scrolling</li>
+                <li><strong>Reset:</strong> Return to the beginning of the script</li>
+                <li><strong>Mirror:</strong> Flip text horizontally (useful for teleprompter mirrors)</li>
+                <li><strong>Center Line:</strong> Show/hide reading guide line</li>
+                <li><strong>Fullscreen:</strong> Enter/exit fullscreen mode</li>
+                <li><strong>Speed:</strong> Adjust scrolling speed (1-10)</li>
+                <li><strong>Font Size:</strong> Adjust text size (16-72px)</li>
+                <li><strong>Scroll Wheel:</strong> Manual scrolling control</li>
+                <li><strong>Spacebar:</strong> Quick play/pause</li>
+            </ul>
+            <button id="closeInfoBtn" class="danger">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        // Script Database
+        const scripts = [
+            // Script 0: Welcome Speech
+            {
+                title: "Welcome Speech",
+                content: `
+                    <div class="script-title">Welcome Speech</div>
+                    
+                    Good evening, everyone!
+                    
+                    It is my absolute pleasure to welcome you all here tonight.
+                    
+                    Whether you're joining us in person or virtually, thank you for being here.
+                    
+                    Tonight is a special occasion, bringing together brilliant minds and passionate individuals from all walks of life.
+                    
+                    We gather not just to celebrate our achievements, but to inspire each other, to learn, and to grow together.
+                    
+                    Each one of you brings unique perspectives and experiences that enrich our community.
+                    
+                    As we move forward this evening, I encourage you to engage, to connect, and to make the most of this wonderful opportunity.
+                    
+                    Let's make tonight memorable!
+                    
+                    Thank you, and enjoy the event!
+                `
+            },
+            
+            // Script 1: Product Presentation
+            {
+                title: "Product Presentation",
+                content: `
+                    <div class="script-title">Product Presentation</div>
+                    
+                    <div class="script-section">
+                        <h3>Introduction</h3>
+                        Hello everyone, and thank you for joining us today.
+                        
+                        I'm excited to introduce you to our latest innovation.
+                        
+                        A product that will revolutionize the way you work.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>The Problem</h3>
+                        For too long, professionals have struggled with inefficient workflows.
+                        
+                        Time is wasted on repetitive tasks.
+                        
+                        Productivity suffers, and innovation stalls.
+                        
+                        We heard your concerns, and we took action.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Our Solution</h3>
+                        Introducing our cutting-edge platform.
+                        
+                        Designed with you in mind.
+                        
+                        It automates the mundane, so you can focus on what matters.
+                        
+                        With intuitive design and powerful features.
+                        
+                        Your productivity will soar to new heights.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Key Features</h3>
+                        Lightning-fast performance.
+                        
+                        Seamless integration with your existing tools.
+                        
+                        Enterprise-grade security.
+                        
+                        And 24/7 dedicated support.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Closing</h3>
+                        Don't let another day go by with outdated solutions.
+                        
+                        Join thousands of satisfied customers.
+                        
+                        Transform your workflow today.
+                        
+                        Thank you!
+                    </div>
+                `
+            },
+            
+            // Script 2: News Broadcast
+            {
+                title: "News Broadcast",
+                content: `
+                    <div class="script-title">Evening News Broadcast</div>
+                    
+                    Good evening, I'm your anchor, bringing you tonight's top stories.
+                    
+                    <div class="script-section">
+                        <h3>HEADLINE STORY</h3>
+                        In our top story tonight:
+                        
+                        Major developments in renewable energy technology.
+                        
+                        Scientists announce a breakthrough in solar panel efficiency.
+                        
+                        The new technology promises to make clean energy more accessible than ever before.
+                        
+                        We'll have a full report coming up.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>TECHNOLOGY NEWS</h3>
+                        In technology news:
+                        
+                        The latest smartphone releases are breaking records.
+                        
+                        Consumers are embracing artificial intelligence features.
+                        
+                        Industry experts predict continued growth in the tech sector.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>COMMUNITY SPOTLIGHT</h3>
+                        And in our community spotlight:
+                        
+                        Local volunteers organize city-wide cleanup initiative.
+                        
+                        Hundreds participate in making our neighborhoods cleaner and greener.
+                        
+                        A heartwarming story of community coming together.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>WEATHER UPDATE</h3>
+                        Looking at the weather:
+                        
+                        Expect clear skies tomorrow with moderate temperatures.
+                        
+                        Perfect conditions for outdoor activities.
+                        
+                        The weekend outlook remains favorable.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>CLOSING</h3>
+                        That's all for tonight's broadcast.
+                        
+                        I'm your anchor, wishing you a pleasant evening.
+                        
+                        Stay informed, stay safe, and we'll see you tomorrow.
+                        
+                        Good night.
+                    </div>
+                `
+            },
+            
+            // Script 3: Educational Lecture
+            {
+                title: "Educational Lecture",
+                content: `
+                    <div class="script-title">Introduction to Renewable Energy</div>
+                    
+                    <div class="script-section">
+                        <h3>Welcome</h3>
+                        Good morning, class!
+                        
+                        Today, we're diving into an exciting and crucial topic.
+                        
+                        Renewable Energy and its impact on our future.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>What is Renewable Energy?</h3>
+                        Renewable energy comes from natural sources.
+                        
+                        Sources that replenish themselves continuously.
+                        
+                        Unlike fossil fuels, which are finite and polluting.
+                        
+                        Solar power, wind energy, hydroelectric power.
+                        
+                        These are all examples of renewable energy.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Why Does It Matter?</h3>
+                        Climate change is one of humanity's greatest challenges.
+                        
+                        Burning fossil fuels releases greenhouse gases.
+                        
+                        These gases trap heat in our atmosphere.
+                        
+                        Leading to global temperature rise.
+                        
+                        Renewable energy offers a solution.
+                        
+                        Clean, sustainable power for generations to come.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Types of Renewable Energy</h3>
+                        Solar Energy: Harnessing the power of the sun.
+                        
+                        Wind Energy: Converting wind motion into electricity.
+                        
+                        Hydroelectric Power: Using flowing water to generate power.
+                        
+                        Geothermal Energy: Tapping into Earth's internal heat.
+                        
+                        Biomass Energy: Converting organic materials into fuel.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>The Future</h3>
+                        Technology continues to improve.
+                        
+                        Costs are decreasing year by year.
+                        
+                        More countries are investing in renewable infrastructure.
+                        
+                        The transition is not just possible.
+                        
+                        It's inevitable.
+                        
+                        And you, as future leaders, will play a crucial role.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Conclusion</h3>
+                        Remember: Every small action counts.
+                        
+                        Whether it's solar panels on your roof.
+                        
+                        Or supporting renewable energy policies.
+                        
+                        Together, we can build a sustainable future.
+                        
+                        Thank you for your attention!
+                        
+                        Any questions?
+                    </div>
+                `
+            },
+            
+            // Script 4: Interview Questions
+            {
+                title: "Interview Questions",
+                content: `
+                    <div class="script-title">Professional Interview Questions</div>
+                    
+                    <div class="script-section">
+                        <h3>Opening</h3>
+                        Good morning, and thank you for joining us today.
+                        
+                        We're excited to learn more about you.
+                        
+                        Let's begin with some questions.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Background Questions</h3>
+                        First, tell us about yourself.
+                        
+                        What motivated you to apply for this position?
+                        
+                        What do you know about our company?
+                        
+                        What interests you most about this role?
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Experience & Skills</h3>
+                        Describe your most significant professional achievement.
+                        
+                        What are your greatest strengths?
+                        
+                        What areas do you want to develop further?
+                        
+                        Tell us about a challenging project you've worked on.
+                        
+                        How did you handle it?
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Problem-Solving</h3>
+                        Describe a time when you faced a difficult problem.
+                        
+                        What was your approach?
+                        
+                        How do you handle tight deadlines?
+                        
+                        Give an example of working in a team.
+                        
+                        How do you handle disagreements with colleagues?
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Future Goals</h3>
+                        Where do you see yourself in five years?
+                        
+                        What are your career aspirations?
+                        
+                        How does this position align with your goals?
+                        
+                        What kind of work environment do you thrive in?
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Closing</h3>
+                        Do you have any questions for us?
+                        
+                        Is there anything else you'd like to share?
+                        
+                        Thank you for your time today.
+                        
+                        We'll be in touch soon regarding next steps.
+                    </div>
+                `
+            },
+            
+            // Script 5: Motivational Speech
+            {
+                title: "Motivational Speech",
+                content: `
+                    <div class="script-title">Believe in Yourself</div>
+                    
+                    <div class="script-section">
+                        <h3>Introduction</h3>
+                        My friends,
+                        
+                        Today I want to talk to you about something powerful.
+                        
+                        Something that resides within each and every one of you.
+                        
+                        Your potential.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>The Journey</h3>
+                        Life is not about waiting for the storm to pass.
+                        
+                        It's about learning to dance in the rain.
+                        
+                        Every challenge you face is an opportunity.
+                        
+                        An opportunity to grow stronger.
+                        
+                        To become better than you were yesterday.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Overcoming Obstacles</h3>
+                        Yes, there will be obstacles.
+                        
+                        There will be moments of doubt.
+                        
+                        Times when you want to give up.
+                        
+                        But remember this:
+                        
+                        The greatest achievements come from the hardest battles.
+                        
+                        Your struggles today are building your strength for tomorrow.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Your Power</h3>
+                        You have within you right now.
+                        
+                        Everything you need to succeed.
+                        
+                        The courage to try.
+                        
+                        The resilience to persist.
+                        
+                        The creativity to find solutions.
+                        
+                        Don't let anyone tell you that you can't.
+                        
+                        Because you can.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Take Action</h3>
+                        Dreams don't work unless you do.
+                        
+                        Start today, start now.
+                        
+                        Take that first step, however small.
+                        
+                        Progress is progress, no matter the pace.
+                        
+                        Your future self will thank you.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Closing</h3>
+                        So stand tall.
+                        
+                        Believe in yourself.
+                        
+                        Trust the process.
+                        
+                        And never, ever give up on your dreams.
+                        
+                        The world is waiting for what only you can offer.
+                        
+                        Now go out there and make it happen!
+                        
+                        Thank you!
+                    </div>
+                `
+            },
+            
+            // Script 6: Technical Presentation
+            {
+                title: "Technical Presentation",
+                content: `
+                    <div class="script-title">Introduction to Cloud Computing</div>
+                    
+                    <div class="script-section">
+                        <h3>Welcome</h3>
+                        Good afternoon, everyone.
+                        
+                        Today we'll explore Cloud Computing.
+                        
+                        Its architecture, benefits, and implementation strategies.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>What is Cloud Computing?</h3>
+                        Cloud computing is the delivery of computing services.
+                        
+                        Servers, storage, databases, networking, software.
+                        
+                        All delivered over the Internet.
+                        
+                        Pay-as-you-go pricing model.
+                        
+                        Access resources on demand.
+                        
+                        Scale up or down as needed.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Service Models</h3>
+                        Three primary service models exist:
+                        
+                        Infrastructure as a Service - IaaS.
+                        
+                        Platform as a Service - PaaS.
+                        
+                        Software as a Service - SaaS.
+                        
+                        Each serves different use cases and requirements.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Deployment Models</h3>
+                        Public Cloud: Shared infrastructure, cost-effective.
+                        
+                        Private Cloud: Dedicated resources, enhanced control.
+                        
+                        Hybrid Cloud: Combines both approaches.
+                        
+                        Multi-Cloud: Using multiple cloud providers.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Key Benefits</h3>
+                        Cost efficiency: Reduce capital expenses.
+                        
+                        Scalability: Grow resources with demand.
+                        
+                        Reliability: Built-in redundancy and backups.
+                        
+                        Performance: Global infrastructure.
+                        
+                        Security: Enterprise-grade protection.
+                        
+                        Innovation: Access to latest technologies.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Security Considerations</h3>
+                        Data encryption at rest and in transit.
+                        
+                        Identity and access management.
+                        
+                        Regular security audits and compliance.
+                        
+                        Disaster recovery planning.
+                        
+                        Shared responsibility model.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Conclusion</h3>
+                        Cloud computing is transforming IT infrastructure.
+                        
+                        Understanding its fundamentals is essential.
+                        
+                        For any modern technology professional.
+                        
+                        Questions and discussion are welcome.
+                        
+                        Thank you for your attention!
+                    </div>
+                `
+            },
+            
+            // Script 7: Event Hosting
+            {
+                title: "Event Hosting",
+                content: `
+                    <div class="script-title">Annual Conference Host Script</div>
+                    
+                    <div class="script-section">
+                        <h3>Opening</h3>
+                        Ladies and gentlemen, welcome!
+                        
+                        Welcome to our Annual Technology Conference 2026!
+                        
+                        I'm your host for today's exciting program.
+                        
+                        We have an incredible lineup of speakers and activities.
+                        
+                        So let's get started!
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Agenda Overview</h3>
+                        Before we begin, let me walk you through today's schedule.
+                        
+                        This morning: Keynote presentations from industry leaders.
+                        
+                        After lunch: Interactive workshops and breakout sessions.
+                        
+                        This afternoon: Panel discussions and Q&A.
+                        
+                        Evening: Networking reception and awards ceremony.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Housekeeping</h3>
+                        A few quick announcements:
+                        
+                        WiFi information is in your welcome packets.
+                        
+                        Restrooms are located at both ends of the hall.
+                        
+                        Lunch will be served in the adjacent ballroom.
+                        
+                        Please silence your mobile devices.
+                        
+                        And use the event hashtag to share on social media!
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Introducing First Speaker</h3>
+                        Now, I'm thrilled to introduce our first speaker.
+                        
+                        A renowned expert in artificial intelligence.
+                        
+                        Author of three bestselling books.
+                        
+                        And recipient of numerous industry awards.
+                        
+                        Please join me in welcoming [Speaker Name]!
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Transition</h3>
+                        Thank you so much for that insightful presentation!
+                        
+                        Let's give another round of applause!
+                        
+                        We'll now take a short 15-minute break.
+                        
+                        Please be back in your seats by 10:30.
+                        
+                        Coffee and refreshments are available outside.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Closing Remarks</h3>
+                        What an incredible day it has been!
+                        
+                        Thank you to all our speakers for sharing their expertise.
+                        
+                        Thank you to our sponsors for making this possible.
+                        
+                        And most importantly, thank you to all of you.
+                        
+                        For your participation and engagement.
+                        
+                        Safe travels home, and we'll see you next year!
+                        
+                        Good evening!
+                    </div>
+                `
+            },
+            
+            // Script 8: YouTube Video Script
+            {
+                title: "YouTube Video Script",
+                content: `
+                    <div class="script-title">YouTube Channel Introduction</div>
+                    
+                    <div class="script-section">
+                        <h3>Hook</h3>
+                        Hey everyone!
+                        
+                        Welcome back to the channel!
+                        
+                        If you're new here, make sure to hit that subscribe button.
+                        
+                        And ring the notification bell.
+                        
+                        So you never miss an upload!
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Introduction</h3>
+                        Today, we're doing something special.
+                        
+                        Something you guys have been asking for.
+                        
+                        We're diving deep into the topic everyone's talking about.
+                        
+                        And trust me, you're going to love this!
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Context Setting</h3>
+                        But first, let me give you some background.
+                        
+                        Last week, we covered the basics.
+                        
+                        If you haven't seen that video, link is in the description.
+                        
+                        Today, we're taking it to the next level.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Main Content</h3>
+                        So here's what we're going to do.
+                        
+                        First, I'll show you the problem.
+                        
+                        Then, we'll explore three different solutions.
+                        
+                        And I'll share my personal recommendation.
+                        
+                        Based on real-world experience.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Engagement</h3>
+                        Quick question for you all:
+                        
+                        Drop a comment below.
+                        
+                        Let me know what you think about this topic.
+                        
+                        I read every single comment.
+                        
+                        And your feedback shapes future content.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Call to Action</h3>
+                        If you're finding this helpful so far.
+                        
+                        Give this video a thumbs up!
+                        
+                        It really helps the channel grow.
+                        
+                        And allows me to create more content like this.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Outro</h3>
+                        Alright, that's it for today's video!
+                        
+                        I hope you learned something new.
+                        
+                        If you have questions, drop them in the comments.
+                        
+                        Don't forget to subscribe if you haven't already.
+                        
+                        Check out these other videos on screen.
+                        
+                        And I'll see you in the next one.
+                        
+                        Peace out!
+                    </div>
+                `
+            },
+            
+            // Script 9: Public Announcement
+            {
+                title: "Public Announcement",
+                content: `
+                    <div class="script-title">Important Community Announcement</div>
+                    
+                    <div class="script-section">
+                        <h3>Attention</h3>
+                        Attention, residents and community members.
+                        
+                        This is an important announcement.
+                        
+                        Please take a moment to listen carefully.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Main Announcement</h3>
+                        The city council has approved new community improvement initiatives.
+                        
+                        Starting next month, we'll be implementing several exciting programs.
+                        
+                        These changes will benefit all residents.
+                        
+                        And enhance our quality of life.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Program Details</h3>
+                        First, expanded public transportation routes.
+                        
+                        New bus lines connecting all major neighborhoods.
+                        
+                        Second, upgraded recreational facilities.
+                        
+                        Including new playgrounds and sports courts.
+                        
+                        Third, enhanced public safety measures.
+                        
+                        Additional street lighting and security cameras.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Community Involvement</h3>
+                        We need your participation to make this successful.
+                        
+                        Volunteer opportunities are available.
+                        
+                        Community meetings will be held monthly.
+                        
+                        Your input is valuable and encouraged.
+                        
+                        Together, we can build a better community.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Important Dates</h3>
+                        Mark your calendars:
+                        
+                        February 15th: First community meeting.
+                        
+                        March 1st: Program implementation begins.
+                        
+                        April 1st: Volunteer registration opens.
+                        
+                        More details will be posted on our website.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Contact Information</h3>
+                        For more information:
+                        
+                        Visit our community center.
+                        
+                        Call our hotline at 555-0123.
+                        
+                        Email us at info@community.org.
+                        
+                        Or check our website at www.community.org.
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>Closing</h3>
+                        Thank you for your attention.
+                        
+                        Thank you for being part of our community.
+                        
+                        Together, we're making positive changes.
+                        
+                        Have a wonderful day!
+                    </div>
+                `
+            }
+        ];
+        
+        // Application State
+        let state = {
+            currentScript: 0,
+            isPlaying: false,
+            scrollPosition: 0,
+            speed: 3,
+            fontSize: 32,
+            isMirrored: false,
+            showCenterLine: false,
+            isFullscreen: false,
+            scrollInterval: null
+        };
+        
+        // DOM Elements
+        const elements = {
+            scriptSelect: document.getElementById('scriptSelect'),
+            playPauseBtn: document.getElementById('playPauseBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            mirrorBtn: document.getElementById('mirrorBtn'),
+            centerLineBtn: document.getElementById('centerLineBtn'),
+            fullscreenBtn: document.getElementById('fullscreenBtn'),
+            speedRange: document.getElementById('speedRange'),
+            speedValue: document.getElementById('speedValue'),
+            fontSizeRange: document.getElementById('fontSizeRange'),
+            fontSizeValue: document.getElementById('fontSizeValue'),
+            infoBtn: document.getElementById('infoBtn'),
+            closeInfoBtn: document.getElementById('closeInfoBtn'),
+            content: document.getElementById('content'),
+            scriptContent: document.getElementById('scriptContent'),
+            display: document.getElementById('display'),
+            centerLine: document.getElementById('centerLine'),
+            progressBar: document.getElementById('progressBar'),
+            speedIndicator: document.getElementById('speedIndicator'),
+            infoOverlay: document.getElementById('infoOverlay'),
+            app: document.getElementById('app')
+        };
+        
+        // Initialize
+        function init() {
+            loadScript(0);
+            attachEventListeners();
+        }
+        
+        // Load Script
+        function loadScript(index) {
+            state.currentScript = index;
+            elements.scriptContent.innerHTML = scripts[index].content;
+            resetScroll();
+        }
+        
+        // Reset Scroll
+        function resetScroll() {
+            state.scrollPosition = 0;
+            elements.content.style.top = '0px';
+            updateProgress();
+            if (state.isPlaying) {
+                togglePlay();
+            }
+        }
+        
+        // Toggle Play/Pause
+        function togglePlay() {
+            state.isPlaying = !state.isPlaying;
+            
+            if (state.isPlaying) {
+                elements.playPauseBtn.innerHTML = '⏸ Pause';
+                elements.playPauseBtn.classList.add('active');
+                startScrolling();
+            } else {
+                elements.playPauseBtn.innerHTML = '▶ Play';
+                elements.playPauseBtn.classList.remove('active');
+                stopScrolling();
+            }
+        }
+        
+        // Start Scrolling
+        function startScrolling() {
+            const scrollSpeed = state.speed * 0.5; // pixels per frame
+            
+            state.scrollInterval = setInterval(() => {
+                state.scrollPosition += scrollSpeed;
+                elements.content.style.top = `-${state.scrollPosition}px`;
+                updateProgress();
+                
+                // Check if reached the end
+                const contentHeight = elements.content.scrollHeight;
+                const displayHeight = elements.display.clientHeight;
+                
+                if (state.scrollPosition >= contentHeight - displayHeight + 100) {
+                    togglePlay();
+                }
+            }, 50);
+        }
+        
+        // Stop Scrolling
+        function stopScrolling() {
+            if (state.scrollInterval) {
+                clearInterval(state.scrollInterval);
+                state.scrollInterval = null;
+            }
+        }
+        
+        // Update Progress
+        function updateProgress() {
+            const contentHeight = elements.content.scrollHeight;
+            const displayHeight = elements.display.clientHeight;
+            const maxScroll = contentHeight - displayHeight;
+            
+            if (maxScroll > 0) {
+                const progress = (state.scrollPosition / maxScroll) * 100;
+                elements.progressBar.style.width = Math.min(progress, 100) + '%';
+            }
+        }
+        
+        // Toggle Mirror
+        function toggleMirror() {
+            state.isMirrored = !state.isMirrored;
+            
+            if (state.isMirrored) {
+                elements.content.classList.add('mirrored');
+                elements.mirrorBtn.classList.add('active');
+            } else {
+                elements.content.classList.remove('mirrored');
+                elements.mirrorBtn.classList.remove('active');
+            }
+        }
+        
+        // Toggle Center Line
+        function toggleCenterLine() {
+            state.showCenterLine = !state.showCenterLine;
+            
+            if (state.showCenterLine) {
+                elements.centerLine.classList.add('active');
+                elements.centerLineBtn.classList.add('active');
+            } else {
+                elements.centerLine.classList.remove('active');
+                elements.centerLineBtn.classList.remove('active');
+            }
+        }
+        
+        // Toggle Fullscreen
+        function toggleFullscreen() {
+            if (!state.isFullscreen) {
+                if (elements.app.requestFullscreen) {
+                    elements.app.requestFullscreen();
+                } else if (elements.app.webkitRequestFullscreen) {
+                    elements.app.webkitRequestFullscreen();
+                } else if (elements.app.msRequestFullscreen) {
+                    elements.app.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+        
+        // Update Speed
+        function updateSpeed(value) {
+            state.speed = parseInt(value);
+            elements.speedValue.textContent = state.speed;
+            elements.speedIndicator.textContent = `Speed: ${state.speed}x`;
+            
+            if (state.isPlaying) {
+                stopScrolling();
+                startScrolling();
+            }
+        }
+        
+        // Update Font Size
+        function updateFontSize(value) {
+            state.fontSize = parseInt(value);
+            elements.fontSizeValue.textContent = state.fontSize + 'px';
+            elements.content.style.fontSize = state.fontSize + 'px';
+        }
+        
+        // Show/Hide Info
+        function toggleInfo(show) {
+            if (show) {
+                elements.infoOverlay.classList.add('active');
+            } else {
+                elements.infoOverlay.classList.remove('active');
+            }
+        }
+        
+        // Event Listeners
+        function attachEventListeners() {
+            // Script Selection
+            elements.scriptSelect.addEventListener('change', (e) => {
+                loadScript(parseInt(e.target.value));
+            });
+            
+            // Play/Pause
+            elements.playPauseBtn.addEventListener('click', togglePlay);
+            
+            // Reset
+            elements.resetBtn.addEventListener('click', resetScroll);
+            
+            // Mirror
+            elements.mirrorBtn.addEventListener('click', toggleMirror);
+            
+            // Center Line
+            elements.centerLineBtn.addEventListener('click', toggleCenterLine);
+            
+            // Fullscreen
+            elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
+            
+            // Speed
+            elements.speedRange.addEventListener('input', (e) => {
+                updateSpeed(e.target.value);
+            });
+            
+            // Font Size
+            elements.fontSizeRange.addEventListener('input', (e) => {
+                updateFontSize(e.target.value);
+            });
+            
+            // Info
+            elements.infoBtn.addEventListener('click', () => toggleInfo(true));
+            elements.closeInfoBtn.addEventListener('click', () => toggleInfo(false));
+            
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !elements.infoOverlay.classList.contains('active')) {
+                    e.preventDefault();
+                    togglePlay();
+                } else if (e.code === 'Escape') {
+                    if (elements.infoOverlay.classList.contains('active')) {
+                        toggleInfo(false);
+                    }
+                }
+            });
+            
+            // Mouse Wheel for Manual Scrolling
+            elements.display.addEventListener('wheel', (e) => {
+                if (!state.isPlaying) {
+                    e.preventDefault();
+                    state.scrollPosition += e.deltaY * 0.5;
+                    state.scrollPosition = Math.max(0, state.scrollPosition);
+                    elements.content.style.top = `-${state.scrollPosition}px`;
+                    updateProgress();
+                }
+            });
+            
+            // Fullscreen Change
+            document.addEventListener('fullscreenchange', () => {
+                state.isFullscreen = !!document.fullscreenElement;
+                
+                if (state.isFullscreen) {
+                    elements.app.classList.add('fullscreen');
+                    elements.fullscreenBtn.innerHTML = '⛶ Exit Fullscreen';
+                    elements.fullscreenBtn.classList.add('active');
+                } else {
+                    elements.app.classList.remove('fullscreen');
+                    elements.fullscreenBtn.innerHTML = '⛶ Fullscreen';
+                    elements.fullscreenBtn.classList.remove('active');
+                }
+            });
+            
+            // Window Resize
+            window.addEventListener('resize', () => {
+                updateProgress();
+            });
+        }
+        
+        // Initialize on Load
+        init();
+    </script>
+</body>
+</html>
