@@ -109,6 +109,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s;
+            touch-action: manipulation;
         }
         
         select {
@@ -157,6 +158,7 @@
             border-radius: 5px;
             cursor: pointer;
             background: #3a3a3a;
+            touch-action: manipulation;
         }
         
         input[type="color"]:hover {
@@ -334,7 +336,6 @@
                 padding: 12px 20px;
                 font-size: 1rem;
                 min-width: 100px;
-                touch-action: manipulation;
             }
             
             .settings-toggle {
@@ -352,13 +353,11 @@
             input[type="range"] {
                 width: 100%;
                 min-height: 40px;
-                touch-action: manipulation;
             }
             
             input[type="color"] {
                 width: 60px;
                 height: 45px;
-                touch-action: manipulation;
             }
             
             .speed-indicator {
