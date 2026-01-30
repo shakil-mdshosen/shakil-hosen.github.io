@@ -2140,6 +2140,30 @@
                 }
             });
             
+            // Mouse Wheel for Font Size Control (Desktop)
+            elements.fontSizeRange.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -2 : 2; // Inverted: scroll down = smaller, scroll up = bigger
+                const currentSize = parseInt(elements.fontSizeRange.value);
+                const minSize = parseInt(elements.fontSizeRange.min);
+                const maxSize = parseInt(elements.fontSizeRange.max);
+                const newSize = Math.min(maxSize, Math.max(minSize, currentSize + delta));
+                elements.fontSizeRange.value = newSize;
+                updateFontSize(newSize);
+            });
+            
+            // Mouse Wheel for Speed Control (Desktop)
+            elements.speedRange.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -1 : 1; // Inverted: scroll down = slower, scroll up = faster
+                const currentSpeed = parseInt(elements.speedRange.value);
+                const minSpeed = parseInt(elements.speedRange.min);
+                const maxSpeed = parseInt(elements.speedRange.max);
+                const newSpeed = Math.min(maxSpeed, Math.max(minSpeed, currentSpeed + delta));
+                elements.speedRange.value = newSpeed;
+                updateSpeed(newSpeed);
+            });
+            
             // Fullscreen Change
             document.addEventListener('fullscreenchange', handleFullscreenChange);
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
