@@ -1378,6 +1378,7 @@
             editingScriptId: null,
             isRecording: false,
             mediaRecorder: null,
+            mediaStream: null,
             audioChunks: [],
             backgroundColor: '#000000',
             textColor: '#ffffff'
@@ -1783,19 +1784,23 @@
         
         // Load Colors from localStorage
         function loadColors() {
-            const savedBgColor = localStorage.getItem('teleprompterBgColor');
-            const savedTextColor = localStorage.getItem('teleprompterTextColor');
-            
-            if (savedBgColor) {
-                state.backgroundColor = savedBgColor;
-                elements.bgColorPicker.value = savedBgColor;
-                elements.display.style.backgroundColor = savedBgColor;
-            }
-            
-            if (savedTextColor) {
-                state.textColor = savedTextColor;
-                elements.textColorPicker.value = savedTextColor;
-                elements.content.style.color = savedTextColor;
+            try {
+                const savedBgColor = localStorage.getItem('teleprompterBgColor');
+                const savedTextColor = localStorage.getItem('teleprompterTextColor');
+                
+                if (savedBgColor) {
+                    state.backgroundColor = savedBgColor;
+                    elements.bgColorPicker.value = savedBgColor;
+                    elements.display.style.backgroundColor = savedBgColor;
+                }
+                
+                if (savedTextColor) {
+                    state.textColor = savedTextColor;
+                    elements.textColorPicker.value = savedTextColor;
+                    elements.content.style.color = savedTextColor;
+                }
+            } catch (e) {
+                console.error('Error loading colors:', e);
             }
         }
         
@@ -1803,22 +1808,42 @@
         function updateBackgroundColor(color) {
             state.backgroundColor = color;
             elements.display.style.backgroundColor = color;
-            localStorage.setItem('teleprompterBgColor', color);
+            try {
+                localStorage.setItem('teleprompterBgColor', color);
+            } catch (e) {
+                console.error('Error saving background color:', e);
+            }
         }
         
         // Update Text Color
         function updateTextColor(color) {
             state.textColor = color;
             elements.content.style.color = color;
-            localStorage.setItem('teleprompterTextColor', color);
+            try {
+                localStorage.setItem('teleprompterTextColor', color);
+            } catch (e) {
+                console.error('Error saving text color:', e);
+            }
         }
         
         // Toggle Recording
         async function toggleRecording() {
             if (!state.isRecording) {
+                // Check for browser support
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert('Voice recording is not supported in your browser. Please use a modern browser like Chrome, Firefox, or Edge.');
+                    return;
+                }
+                
                 // Start recording
                 try {
+                    // Clean up any existing stream
+                    if (state.mediaStream) {
+                        state.mediaStream.getTracks().forEach(track => track.stop());
+                    }
+                    
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    state.mediaStream = stream;
                     state.mediaRecorder = new MediaRecorder(stream);
                     state.audioChunks = [];
                     
@@ -1829,7 +1854,10 @@
                     state.mediaRecorder.addEventListener('stop', () => {
                         const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
                         const audioUrl = URL.createObjectURL(audioBlob);
-                        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                        
+                        // Create filename with local timestamp
+                        const now = new Date();
+                        const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}-${String(now.getSeconds()).padStart(2,'0')}`;
                         const filename = `teleprompter-recording-${timestamp}.webm`;
                         
                         // Create download link
@@ -1847,7 +1875,10 @@
                         }, 100);
                         
                         // Stop all tracks
-                        stream.getTracks().forEach(track => track.stop());
+                        if (state.mediaStream) {
+                            state.mediaStream.getTracks().forEach(track => track.stop());
+                            state.mediaStream = null;
+                        }
                     });
                     
                     state.mediaRecorder.start();
@@ -1857,19 +1888,39 @@
                     elements.recordingStatus.textContent = 'Recording...';
                 } catch (error) {
                     console.error('Error accessing microphone:', error);
-                    alert('Unable to access microphone. Please ensure you have granted microphone permissions.');
+                    let errorMessage = 'Unable to access microphone. ';
+                    if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                        errorMessage += 'Please grant microphone permissions and try again.';
+                    } else if (error.name === 'NotFoundError') {
+                        errorMessage += 'No microphone found. Please connect a microphone and try again.';
+                    } else {
+                        errorMessage += 'Please check your browser settings and try again.';
+                    }
+                    alert(errorMessage);
                 }
             } else {
                 // Stop recording
-                if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
-                    state.mediaRecorder.stop();
+                try {
+                    if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
+                        state.mediaRecorder.stop();
+                    }
+                } catch (error) {
+                    console.error('Error stopping recording:', error);
                 }
+                
                 state.isRecording = false;
                 elements.recordBtn.classList.remove('recording');
                 elements.recordBtn.textContent = '🎤 Record';
                 elements.recordingStatus.textContent = '';
             }
         }
+        
+        // Cleanup recording on page unload
+        window.addEventListener('beforeunload', () => {
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(track => track.stop());
+            }
+        });
         
         // Event Listeners
         function attachEventListeners() {
