@@ -78,6 +78,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: manipulation;
         }
         
         .settings-toggle:hover {
@@ -109,6 +110,7 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s;
+            touch-action: manipulation;
         }
         
         select {
@@ -157,6 +159,7 @@
             border-radius: 5px;
             cursor: pointer;
             background: #3a3a3a;
+            touch-action: manipulation;
         }
         
         input[type="color"]:hover {
@@ -310,14 +313,38 @@
             .controls-header {
                 padding: 10px;
                 gap: 10px;
+                max-height: 70vh;
+                overflow-y: auto;
             }
             
             .control-group {
                 flex-basis: 100%;
+                justify-content: space-between;
+            }
+            
+            .control-group label {
+                font-size: 1rem;
+                min-width: 100px;
             }
             
             select {
                 min-width: 100%;
+                font-size: 1rem;
+                padding: 12px 15px;
+            }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 1rem;
+                min-width: 100px;
+            }
+            
+            .settings-toggle {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+                top: 15px;
+                right: 15px;
             }
             
             .teleprompter-content {
@@ -326,6 +353,68 @@
             
             input[type="range"] {
                 width: 100%;
+                min-height: 40px;
+            }
+            
+            input[type="color"] {
+                width: 60px;
+                height: 45px;
+            }
+            
+            .speed-indicator {
+                top: 80px;
+                right: 10px;
+                font-size: 1rem;
+                padding: 12px 18px;
+            }
+            
+            .breadcrumb {
+                width: 100%;
+                font-size: 1rem;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #444;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .controls-header {
+                padding: 8px;
+                gap: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .control-group {
+                gap: 8px;
+            }
+            
+            .control-group label {
+                font-size: 0.95rem;
+                min-width: 80px;
+            }
+            
+            select, button {
+                padding: 10px 15px;
+                font-size: 0.95rem;
+            }
+            
+            .settings-toggle {
+                width: 55px;
+                height: 55px;
+                font-size: 1.8rem;
+            }
+            
+            input[type="color"] {
+                width: 55px;
+                height: 40px;
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .modal h2 {
+                font-size: 1.3rem;
             }
         }
         
