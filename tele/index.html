@@ -297,27 +297,27 @@
             </div>
             
             <div class="control-group">
-                <button id="playPauseBtn">▶ Play</button>
-                <button id="resetBtn">⟲ Reset</button>
-                <button id="mirrorBtn">⇄ Mirror</button>
-                <button id="centerLineBtn">━ Center Line</button>
-                <button id="fullscreenBtn">⛶ Fullscreen</button>
+                <button id="playPauseBtn" aria-label="Play">▶ Play</button>
+                <button id="resetBtn" aria-label="Reset">⟲ Reset</button>
+                <button id="mirrorBtn" aria-label="Mirror">⇄ Mirror</button>
+                <button id="centerLineBtn" aria-label="Center Line">━ Center Line</button>
+                <button id="fullscreenBtn" aria-label="Fullscreen">⛶ Fullscreen</button>
             </div>
             
             <div class="control-group">
                 <label for="speedRange">Speed:</label>
-                <input type="range" id="speedRange" min="1" max="10" value="3" step="1">
+                <input type="range" id="speedRange" min="1" max="10" value="3" step="1" aria-label="Speed control">
                 <span id="speedValue">3</span>
             </div>
             
             <div class="control-group">
                 <label for="fontSizeRange">Font Size:</label>
-                <input type="range" id="fontSizeRange" min="16" max="72" value="32" step="2">
+                <input type="range" id="fontSizeRange" min="16" max="72" value="32" step="2" aria-label="Font size control">
                 <span id="fontSizeValue">32px</span>
             </div>
             
             <div class="control-group">
-                <button id="infoBtn">ℹ Help</button>
+                <button id="infoBtn" aria-label="Help">ℹ Help</button>
             </div>
         </div>
         
@@ -1393,8 +1393,14 @@
             });
             
             // Fullscreen Change
-            document.addEventListener('fullscreenchange', () => {
-                state.isFullscreen = !!document.fullscreenElement;
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('msfullscreenchange', handleFullscreenChange);
+            
+            function handleFullscreenChange() {
+                state.isFullscreen = !!(document.fullscreenElement || 
+                                        document.webkitFullscreenElement || 
+                                        document.msFullscreenElement);
                 
                 if (state.isFullscreen) {
                     elements.app.classList.add('fullscreen');
@@ -1405,11 +1411,15 @@
                     elements.fullscreenBtn.innerHTML = '⛶ Fullscreen';
                     elements.fullscreenBtn.classList.remove('active');
                 }
-            });
+            }
             
-            // Window Resize
+            // Window Resize (with debouncing)
+            let resizeTimeout;
             window.addEventListener('resize', () => {
-                updateProgress();
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    updateProgress();
+                }, 100);
             });
         }
         
