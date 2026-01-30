@@ -240,7 +240,7 @@
         /* Speed Indicator */
         .speed-indicator {
             position: absolute;
-            top: 20px;
+            top: 70px;
             right: 20px;
             background: rgba(0,0,0,0.7);
             padding: 10px 15px;
@@ -631,8 +631,10 @@
             <div class="control-group">
                 <label for="bgColorPicker">Background:</label>
                 <input type="color" id="bgColorPicker" value="#000000" aria-label="Background color">
+                <button id="resetBgColorBtn" aria-label="Reset Background Color">↺</button>
                 <label for="textColorPicker">Text:</label>
                 <input type="color" id="textColorPicker" value="#ffffff" aria-label="Text color">
+                <button id="resetTextColorBtn" aria-label="Reset Text Color">↺</button>
             </div>
             
             <div class="control-group">
@@ -1548,7 +1550,9 @@
             recordBtn: document.getElementById('recordBtn'),
             recordingStatus: document.getElementById('recordingStatus'),
             bgColorPicker: document.getElementById('bgColorPicker'),
-            textColorPicker: document.getElementById('textColorPicker')
+            textColorPicker: document.getElementById('textColorPicker'),
+            resetBgColorBtn: document.getElementById('resetBgColorBtn'),
+            resetTextColorBtn: document.getElementById('resetTextColorBtn')
         };
         
         // Initialize
@@ -2106,6 +2110,17 @@
             
             elements.textColorPicker.addEventListener('input', (e) => {
                 updateTextColor(e.target.value);
+            });
+            
+            // Color Reset Buttons
+            elements.resetBgColorBtn.addEventListener('click', () => {
+                elements.bgColorPicker.value = '#000000';
+                updateBackgroundColor('#000000');
+            });
+            
+            elements.resetTextColorBtn.addEventListener('click', () => {
+                elements.textColorPicker.value = '#ffffff';
+                updateTextColor('#ffffff');
             });
             
             // Info
