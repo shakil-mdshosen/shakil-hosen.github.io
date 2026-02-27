@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO Meta Tags -->
+    <title>IP Address Processor | Shakil Hosen</title>
+    <meta name="title" content="IP Address Processor | Shakil Hosen">
+    <meta name="description" content="Free online tool to clean and deduplicate IP addresses. Paste IPs, remove ports, remove duplicates, and get results in convenient copy-ready blocks of 50.">
+    <meta name="author" content="Shakil Hosen">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://shakil.live/ip-process/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shakil.live/ip-process/">
+    <meta property="og:title" content="IP Address Processor | Shakil Hosen">
+    <meta property="og:description" content="Free online tool to clean and deduplicate IP addresses. Paste IPs, remove ports, remove duplicates, and get results in convenient copy-ready blocks of 50.">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="alternate icon" href="../favicon.ico">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Input area */
+        .input-section {
+            margin-bottom: 20px;
+        }
+        .input-section label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        textarea#ipInput {
+            width: 100%;
+            height: 200px;
+            padding: 14px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            color: #333;
+            background: #fafafa;
+        }
+        textarea#ipInput:focus {
+            outline: none;
+            border-color: #007bff;
+            background: #fff;
+        }
+
+        /* Options bar */
+        .options-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #495057;
+            cursor: pointer;
+            user-select: none;
+        }
+        .option-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #007bff;
+            cursor: pointer;
+        }
+        .option-item label {
+            cursor: pointer;
+        }
+        .block-size-label {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        .block-size-label input[type="number"] {
+            width: 70px;
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0069d9;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: none;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 14px 18px;
+            background: #e8f4fd;
+            border-left: 4px solid #007bff;
+            border-radius: 6px;
+        }
+        .stat-item {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        .stat-item strong {
+            color: #007bff;
+        }
+
+        /* Output area */
+        .output-section {
+            display: none;
+        }
+        .output-section h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        /* IP block cards */
+        .ip-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .ip-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .ip-block-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        .copy-btn {
+            padding: 5px 14px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .copy-btn:hover {
+            background: #0069d9;
+        }
+        .copy-btn:active {
+            transform: scale(0.96);
+        }
+        .copy-btn.copied {
+            background: #28a745;
+        }
+        .ip-block-content {
+            padding: 14px 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.88rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #212529;
+            max-height: 300px;
+            overflow-y: auto;
+            line-height: 1.7;
+        }
+
+        /* No results */
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            .header h1 { font-size: 1.5rem; }
+            .options-bar { gap: 12px; }
+            .btn-row { gap: 8px; }
+            .btn { padding: 9px 16px; font-size: 0.88rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="https://shakil.live/">Home</a> &rsaquo; IP Address Processor
+        </nav>
+
+        <header class="header">
+            <h1>🌐 IP Address Processor</h1>
+            <p>Paste a list of IP addresses, strip ports, remove duplicates, and get clean copy-ready blocks.</p>
+        </header>
+
+        <main>
+            <!-- Input -->
+            <div class="input-section">
+                <label for="ipInput">Paste IP Addresses (one per line, or comma/space-separated):</label>
+                <textarea id="ipInput" placeholder="192.168.1.1:8080
+10.0.0.1
+10.0.0.1:443
+2001:db8::1
+[2001:db8::2]:8080
+172.16.0.5, 172.16.0.6 203.0.113.1"></textarea>
+            </div>
+
+            <!-- Options -->
+            <div class="options-bar">
+                <label class="option-item">
+                    <input type="checkbox" id="optRemovePorts" checked>
+                    <span>Remove port numbers</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="optDedup" checked>
+                    <span>Remove duplicate IPs</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="optSort">
+                    <span>Sort IPs</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="optRemovePrivate">
+                    <span>Remove private/reserved IPs</span>
+                </label>
+                <span class="block-size-label">
+                    IPs per block:&nbsp;
+                    <input type="number" id="blockSize" value="50" min="1" max="10000">
+                </span>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="processIPs()">⚡ Process IPs</button>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear</button>
+                <button class="btn btn-success" id="downloadBtn" onclick="downloadAll()" style="display:none;">⬇️ Download All</button>
+                <button class="btn btn-secondary" id="copyAllBtn" onclick="copyAll()" style="display:none;">📋 Copy All</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-bar" id="statsBar">
+                <span class="stat-item">Input lines: <strong id="statInput">0</strong></span>
+                <span class="stat-item">Valid IPs parsed: <strong id="statValid">0</strong></span>
+                <span class="stat-item">Duplicates removed: <strong id="statDupes">0</strong></span>
+                <span class="stat-item">Private/reserved removed: <strong id="statPrivate">0</strong></span>
+                <span class="stat-item">Output IPs: <strong id="statOutput">0</strong></span>
+                <span class="stat-item">Blocks: <strong id="statBlocks">0</strong></span>
+            </div>
+
+            <!-- Output -->
+            <div class="output-section" id="outputSection">
+                <h2>Processed Results</h2>
+                <div id="blocksContainer"></div>
+            </div>
+
+            <!-- No results message -->
+            <div class="no-results" id="noResults">
+                No valid IP addresses found in the input. Please check your data and try again.
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Shakil Hosen | <a href="https://shakil.live/" style="color:#007bff;text-decoration:none;">shakil.live</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // ── helpers ─────────────────────────────────────────────────────────────
+
+        const PRIVATE_RANGES = [
+            /^10\.\d+\.\d+\.\d+$/,
+            /^172\.(1[6-9]|2\d|3[01])\.\d+\.\d+$/,
+            /^192\.168\.\d+\.\d+$/,
+            /^127\.\d+\.\d+\.\d+$/,      // loopback
+            /^169\.254\.\d+\.\d+$/,      // link-local
+            /^0\.0\.0\.0$/,
+            /^255\.255\.255\.255$/,
+            /^::1$/,                      // IPv6 loopback
+            /^fe80:/i,                    // IPv6 link-local
+            /^fc00:/i,                    // IPv6 unique-local
+            /^fd[0-9a-f]{2}:/i,
+        ];
+
+        function isPrivateIP(ip) {
+            return PRIVATE_RANGES.some(re => re.test(ip));
+        }
+
+        /**
+         * Strip port from an IP string.
+         * Handles:
+         *   - IPv4 with port:  "1.2.3.4:8080"  → "1.2.3.4"
+         *   - IPv6 with port:  "[::1]:443"      → "::1"
+         *   - bare IPv6:       "::1"            → "::1"
+         */
+        function stripPort(token) {
+            token = token.trim();
+            // IPv6 in brackets: [addr]:port or [addr]
+            if (token.startsWith('[')) {
+                const close = token.indexOf(']');
+                if (close !== -1) {
+                    return token.slice(1, close);
+                }
+            }
+            // IPv4 with port: has exactly one colon and the part before it looks like IPv4
+            const colonCount = (token.match(/:/g) || []).length;
+            if (colonCount === 1) {
+                const parts = token.split(':');
+                // only strip if left side looks like IPv4 with valid octet values
+                if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(parts[0]) &&
+                    parts[0].split('.').every(o => Number(o) <= 255)) {
+                    return parts[0];
+                }
+            }
+            return token;
+        }
+
+        /**
+         * Very lenient validation: accept dotted-quad IPv4 and anything
+         * that looks like IPv6 (contains colons, optionally with hex/colons).
+         */
+        function isValidIP(ip) {
+            // IPv4
+            if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) {
+                return ip.split('.').every(octet => Number(octet) <= 255);
+            }
+            // IPv6 — must contain at least two colons or be "::"
+            if (/^[0-9a-fA-F:]+$/.test(ip) && ip.includes(':')) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * Tokenise input: split on newlines, commas, spaces, semicolons and tabs.
+         */
+        function tokenise(text) {
+            return text.split(/[\n\r,;\s]+/).map(t => t.trim()).filter(Boolean);
+        }
+
+        // ── core processing ──────────────────────────────────────────────────────
+
+        function processIPs() {
+            const raw = document.getElementById('ipInput').value;
+            const removePorts  = document.getElementById('optRemovePorts').checked;
+            const deduplicate  = document.getElementById('optDedup').checked;
+            const sortIPs      = document.getElementById('optSort').checked;
+            const removePriv   = document.getElementById('optRemovePrivate').checked;
+            const blockSize    = Math.max(1, parseInt(document.getElementById('blockSize').value, 10) || 50);
+
+            const tokens = tokenise(raw);
+            const statInput = tokens.length;
+
+            // Strip ports
+            let ips = tokens.map(t => removePorts ? stripPort(t) : t);
+
+            // Validate
+            ips = ips.filter(isValidIP);
+            const statValid = ips.length;
+
+            // Remove private
+            let statPrivate = 0;
+            if (removePriv) {
+                const before = ips.length;
+                ips = ips.filter(ip => !isPrivateIP(ip));
+                statPrivate = before - ips.length;
+            }
+
+            // Deduplicate (preserving first-seen order)
+            let statDupes = 0;
+            if (deduplicate) {
+                const seen = new Set();
+                const unique = [];
+                for (const ip of ips) {
+                    const key = ip.toLowerCase();
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        unique.push(ip);
+                    }
+                }
+                statDupes = ips.length - unique.length;
+                ips = unique;
+            }
+
+            // Sort
+            if (sortIPs) {
+                ips.sort((a, b) => {
+                    // simple lexicographic; works reasonably for IPv4
+                    const toNum = ip => {
+                        const parts = ip.split('.').map(Number);
+                        if (parts.length === 4 && parts.every(p => !isNaN(p))) {
+                            return parts.reduce((acc, p) => acc * 256 + p, 0);
+                        }
+                        return ip; // IPv6 — sort as string
+                    };
+                    const na = toNum(a), nb = toNum(b);
+                    if (typeof na === 'number' && typeof nb === 'number') return na - nb;
+                    return String(a).localeCompare(String(b));
+                });
+            }
+
+            const statOutput = ips.length;
+
+            // Update stats
+            document.getElementById('statInput').textContent   = statInput;
+            document.getElementById('statValid').textContent   = statValid;
+            document.getElementById('statDupes').textContent   = statDupes;
+            document.getElementById('statPrivate').textContent = statPrivate;
+            document.getElementById('statOutput').textContent  = statOutput;
+
+            // Build blocks
+            const blocks = [];
+            for (let i = 0; i < ips.length; i += blockSize) {
+                blocks.push(ips.slice(i, i + blockSize));
+            }
+            document.getElementById('statBlocks').textContent = blocks.length;
+
+            // Show/hide elements
+            const statsBar      = document.getElementById('statsBar');
+            const outputSection = document.getElementById('outputSection');
+            const noResults     = document.getElementById('noResults');
+            const downloadBtn   = document.getElementById('downloadBtn');
+            const copyAllBtn    = document.getElementById('copyAllBtn');
+
+            statsBar.style.display = 'flex';
+
+            if (ips.length === 0) {
+                outputSection.style.display = 'none';
+                noResults.style.display = 'block';
+                downloadBtn.style.display = 'none';
+                copyAllBtn.style.display = 'none';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            outputSection.style.display = 'block';
+            downloadBtn.style.display = 'inline-block';
+            copyAllBtn.style.display = 'inline-block';
+
+            // Render blocks
+            const container = document.getElementById('blocksContainer');
+            container.innerHTML = '';
+
+            blocks.forEach((block, idx) => {
+                const start = idx * blockSize + 1;
+                const end   = start + block.length - 1;
+                const text  = block.join('\n');
+
+                const card = document.createElement('div');
+                card.className = 'ip-block';
+                card.innerHTML = `
+                    <div class="ip-block-header">
+                        <span class="ip-block-title">Block ${idx + 1} &mdash; IPs ${start}–${end} (${block.length} IPs)</span>
+                        <button class="copy-btn" onclick="copyBlock(this, ${idx})">📋 Copy Block</button>
+                    </div>
+                    <div class="ip-block-content" id="block-${idx}">${escapeHtml(text)}</div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Store processed list globally for download/copyAll
+            window._processedIPs = ips;
+        }
+
+        // ── utility ──────────────────────────────────────────────────────────────
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function copyBlock(btn, idx) {
+            const content = document.getElementById('block-' + idx).textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy Block';
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // Fallback for legacy browsers that don't support the Clipboard API
+                const ta = document.createElement('textarea');
+                ta.value = content;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy'); // deprecated but needed for legacy browser support
+                document.body.removeChild(ta);
+                btn.textContent = '✅ Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy Block';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function copyAll() {
+            if (!window._processedIPs || window._processedIPs.length === 0) return;
+            const text = window._processedIPs.join('\n');
+            const btn = document.getElementById('copyAllBtn');
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '✅ Copied All!';
+                setTimeout(() => { btn.textContent = '📋 Copy All'; }, 2000);
+            }).catch(() => {
+                // Fallback for legacy browsers that don't support the Clipboard API
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy'); // deprecated but needed for legacy browser support
+                document.body.removeChild(ta);
+                btn.textContent = '✅ Copied All!';
+                setTimeout(() => { btn.textContent = '📋 Copy All'; }, 2000);
+            });
+        }
+
+        function downloadAll() {
+            if (!window._processedIPs || window._processedIPs.length === 0) return;
+            const text = window._processedIPs.join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = 'processed-ips.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAll() {
+            document.getElementById('ipInput').value = '';
+            document.getElementById('outputSection').style.display = 'none';
+            document.getElementById('statsBar').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('copyAllBtn').style.display = 'none';
+            document.getElementById('blocksContainer').innerHTML = '';
+            window._processedIPs = [];
+        }
+
+        // Allow Ctrl+Enter or Cmd+Enter to trigger processing
+        document.getElementById('ipInput').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                processIPs();
+            }
+        });
+    </script>
+</body>
+</html>
