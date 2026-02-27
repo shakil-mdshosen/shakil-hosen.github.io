@@ -501,8 +501,7 @@
         // Note: these are client-side keys for a personal tool — keep this page access-restricted.
         const _cfg = (function() {
             const k = ['l4md7i', '3092sv', 'd9z868', '5vh4o2'].join('-');
-            const h = '55a8b1b34344aa4a2ac865d630cb88dd9bef2f308d6cc876a5e2b5d7dee68ccc';
-            return { key: k, hmac: h };
+            return { key: k };
         })();
 
         // ── Helpers ───────────────────────────────────────────────────────────────
@@ -546,8 +545,8 @@
         }
 
         function boolBadge(val) {
-            if (val === true)  return '<span class="badge badge-true">Yes</span>';
-            if (val === false) return '<span class="badge badge-false">No</span>';
+            if (val === true  || val === 'yes') return '<span class="badge badge-true">Yes</span>';
+            if (val === false || val === 'no')  return '<span class="badge badge-false">No</span>';
             return '<span class="badge badge-null">—</span>';
         }
 
@@ -557,33 +556,39 @@
             return `<span class="${cls}">${risk}</span>`;
         }
 
-        // ── API Call ──────────────────────────────────────────────────────────────
+        // ── API Call (batch POST) ─────────────────────────────────────────────────
 
         /**
-         * Check a single IP against proxycheck.io.
-         * Returns the parsed result object for that IP, or null on error.
+         * Check a batch of IPs against proxycheck.io via POST.
+         * Returns the full API response data object (each IP is a top-level key).
+         * API docs: https://proxycheck.io/api/
          */
-        async function checkIP(ip) {
+        async function checkIPsBatch(ips) {
             const params = new URLSearchParams({
                 key: _cfg.key,
                 vpn: '1',
                 asn: '1',
                 risk: '2',
-                port: '0',
                 seen: '1',
             });
-            const url = `https://proxycheck.io/v2/${encodeURIComponent(ip)}?${params}`;
-            const res = await fetch(url);
+            const url = `https://proxycheck.io/v2/?${params}`;
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `ips=${ips.join(',')}`,
+            });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data = await res.json();
             if (data.status === 'error') throw new Error(data.message || 'API error');
-            // The IP result lives under data[ip]
-            return data[ip] || null;
+            return data;
         }
 
         // ── Main logic ────────────────────────────────────────────────────────────
 
         let _flaggedIPs = [];
+
+        const BATCH_SIZE = 100;
+        const DELAY_MS   = 500;
 
         async function startCheck() {
             const raw = document.getElementById('ipInput').value;
@@ -625,46 +630,52 @@
             progressFill.style.width = '0%';
 
             let checked = 0, flagged = 0, clean = 0, errors = 0;
-            const CONCURRENCY = 3;
-            const DELAY_MS    = 200;
-            const rows        = [];
+            const rows = [];
 
-            for (let i = 0; i < ips.length; i += CONCURRENCY) {
-                const batch = ips.slice(i, i + CONCURRENCY);
+            for (let i = 0; i < ips.length; i += BATCH_SIZE) {
+                const batch = ips.slice(i, i + BATCH_SIZE);
 
-                await Promise.allSettled(
-                    batch.map(async ip => {
-                        try {
-                            const result = await checkIP(ip);
-                            checked++;
-                            const d = (result && result.detections) ? result.detections : {};
-                            const net = (result && result.network) ? result.network : {};
-                            const loc = (result && result.location) ? result.location : {};
+                try {
+                    const data = await checkIPsBatch(batch);
 
-                            const isFlagged = d.proxy === true || d.vpn === true ||
-                                              d.compromised === true || d.hosting === true;
+                    for (const ip of batch) {
+                        const result = data[ip] || null;
+                        checked++;
 
-                            if (isFlagged) {
-                                flagged++;
-                                _flaggedIPs.push(ip);
-                            } else {
-                                clean++;
-                            }
+                        // The proxycheck.io API v2 returns flat fields directly on the IP object:
+                        //   proxy/vpn: "yes" or "no" (string)
+                        //   type: "VPN", "TOR", "Hosting", "Compromised Server", etc.
+                        //   risk: integer 0-100, country/isocode/provider: strings
+                        const isProxy       = result ? result.proxy === 'yes' : false;
+                        const isVPN         = result ? result.vpn   === 'yes' : false;
+                        const typeStr       = result && result.type ? result.type.toLowerCase() : '';
+                        const isCompromised = typeStr.includes('compromised');
+                        const isHosting     = typeStr.includes('hosting');
 
-                            rows.push({ ip, result, d, net, loc, isFlagged, error: null });
-                        } catch (err) {
-                            errors++;
-                            rows.push({ ip, result: null, d: {}, net: {}, loc: {}, isFlagged: false, error: err.message });
+                        const isFlagged = isProxy || isVPN || isCompromised || isHosting;
+
+                        if (isFlagged) {
+                            flagged++;
+                            _flaggedIPs.push(ip);
+                        } else {
+                            clean++;
                         }
-                    })
-                );
 
-                const done = Math.min(i + CONCURRENCY, ips.length);
+                        rows.push({ ip, result, isFlagged, isProxy, isVPN, isCompromised, isHosting, error: null });
+                    }
+                } catch (err) {
+                    for (const ip of batch) {
+                        errors++;
+                        rows.push({ ip, result: null, isFlagged: false, isProxy: false, isVPN: false, isCompromised: false, isHosting: false, error: err.message });
+                    }
+                }
+
+                const done = Math.min(i + BATCH_SIZE, ips.length);
                 const pct  = Math.round((done / ips.length) * 100);
                 progressFill.style.width = pct + '%';
                 progressLabel.textContent = `Checking IPs… ${done} / ${ips.length}`;
 
-                if (i + CONCURRENCY < ips.length) {
+                if (i + BATCH_SIZE < ips.length) {
                     await new Promise(r => setTimeout(r, DELAY_MS));
                 }
             }
@@ -702,7 +713,7 @@
             const tbody = document.getElementById('resultsBody');
             tbody.innerHTML = '';
 
-            rows.forEach(({ ip, d, net, loc, isFlagged, error }) => {
+            rows.forEach(({ ip, result, isFlagged, isProxy, isVPN, isCompromised, isHosting, error }) => {
                 const tr = document.createElement('tr');
                 if (isFlagged) tr.style.background = '#fff5f5';
 
@@ -712,19 +723,20 @@
                         <td colspan="8" style="color:#dc3545">⚠️ ${escapeHtml(error)}</td>
                     `;
                 } else {
-                    const country = loc.country_name
-                        ? `${escapeHtml(loc.country_name)} (${escapeHtml(loc.country_code)})`
+                    const r = result || {};
+                    const country = r.country
+                        ? `${escapeHtml(r.country)} (${escapeHtml(r.isocode)})`
                         : '—';
                     tr.innerHTML = `
                         <td><code>${escapeHtml(ip)}</code></td>
-                        <td>${boolBadge(d.proxy)}</td>
-                        <td>${boolBadge(d.vpn)}</td>
-                        <td>${boolBadge(d.compromised)}</td>
-                        <td>${boolBadge(d.hosting)}</td>
-                        <td>${riskSpan(d.risk)}</td>
+                        <td>${boolBadge(isProxy)}</td>
+                        <td>${boolBadge(isVPN)}</td>
+                        <td>${boolBadge(isCompromised)}</td>
+                        <td>${boolBadge(isHosting)}</td>
+                        <td>${riskSpan(r.risk)}</td>
                         <td>${country}</td>
-                        <td>${escapeHtml(net.provider || null)}</td>
-                        <td>${escapeHtml(net.type || null)}</td>
+                        <td>${escapeHtml(r.provider || '—')}</td>
+                        <td>${escapeHtml(r.type || '—')}</td>
                     `;
                 }
                 tbody.appendChild(tr);
