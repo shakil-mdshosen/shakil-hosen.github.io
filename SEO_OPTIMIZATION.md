@@ -39,7 +39,7 @@ To complete the modern image format optimization:
 Replace `G-XXXXXXXXXX` in index.html with your actual Google Analytics 4 tracking ID:
 
 1. Go to [Google Analytics](https://analytics.google.com/)
-2. Create a new property for shakil.live
+2. Create a new property for shakil.engineer
 3. Copy the Measurement ID (starts with G-)
 4. Replace both instances of `G-XXXXXXXXXX` in the HTML
 

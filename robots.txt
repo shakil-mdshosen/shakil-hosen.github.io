@@ -6,7 +6,7 @@ Disallow: /tmp/
 Disallow: /.git/
 
 # Sitemap location
-Sitemap: https://shakil.live/sitemap.xml
+Sitemap: https://shakil.engineer/sitemap.xml
 
 # Crawl-delay for politeness
 Crawl-delay: 1

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO Meta Tags -->
+    <title>IP Proxy & VPN Checker | Shakil Hosen</title>
+    <meta name="title" content="IP Proxy & VPN Checker | Shakil Hosen">
+    <meta name="description" content="Check IP addresses for proxy, VPN, compromised, and hosting detection using the proxycheck.io API. Paste IPs line by line and instantly identify flagged addresses.">
+    <meta name="author" content="Shakil Hosen">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://shakil.engineer/ip-process/proxy/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shakil.engineer/ip-process/proxy/">
+    <meta property="og:title" content="IP Proxy & VPN Checker | Shakil Hosen">
+    <meta property="og:description" content="Check IP addresses for proxy, VPN, compromised, and hosting detection using the proxycheck.io API.">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="alternate icon" href="../../favicon.ico">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+        .header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Input area */
+        .input-section {
+            margin-bottom: 20px;
+        }
+        .input-section label {
+            display: block;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        textarea#ipInput {
+            width: 100%;
+            height: 200px;
+            padding: 14px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            color: #333;
+            background: #fafafa;
+        }
+        textarea#ipInput:focus {
+            outline: none;
+            border-color: #007bff;
+            background: #fff;
+        }
+
+        /* Options bar */
+        .options-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #495057;
+            cursor: pointer;
+            user-select: none;
+        }
+        .option-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #007bff;
+            cursor: pointer;
+        }
+        .option-item label {
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0069d9;
+        }
+        .btn-primary:disabled {
+            background: #6c9bd2;
+            cursor: not-allowed;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* Progress bar */
+        .progress-section {
+            display: none;
+            margin-bottom: 16px;
+            padding: 14px 18px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+        }
+        .progress-label {
+            font-size: 0.9rem;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        .progress-track {
+            width: 100%;
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.2s;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: none;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 14px 18px;
+            background: #e8f4fd;
+            border-left: 4px solid #007bff;
+            border-radius: 6px;
+        }
+        .stat-item {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        .stat-item strong {
+            color: #007bff;
+        }
+
+        /* Results table */
+        .output-section {
+            display: none;
+        }
+        .output-section h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .result-table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        thead th {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        tbody tr:hover {
+            background: #e8f4fd;
+        }
+        tbody td {
+            padding: 8px 14px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+            word-break: break-all;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .badge-true {
+            background: #f8d7da;
+            color: #842029;
+        }
+        .badge-false {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+        .badge-null {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+        .risk-high  { color: #dc3545; font-weight: 700; }
+        .risk-med   { color: #fd7e14; font-weight: 700; }
+        .risk-low   { color: #198754; font-weight: 700; }
+
+        /* Copy button for flagged IPs */
+        .copy-btn {
+            padding: 5px 14px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .copy-btn:hover { background: #0069d9; }
+        .copy-btn:active { transform: scale(0.96); }
+        .copy-btn.copied { background: #28a745; }
+
+        /* Error / notice boxes */
+        .error-section {
+            display: none;
+            margin-bottom: 16px;
+            padding: 14px 18px;
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #842029;
+        }
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .info-notice {
+            padding: 12px 16px;
+            background: #e8f4fd;
+            border-left: 4px solid #007bff;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+        .info-notice strong { color: #007bff; }
+
+        /* Flagged IPs copy block */
+        .flagged-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .flagged-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            background: #e9ecef;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .flagged-block-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        .flagged-block-content {
+            padding: 14px 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.88rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #212529;
+            max-height: 200px;
+            overflow-y: auto;
+            line-height: 1.7;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            .header h1 { font-size: 1.5rem; }
+            .btn { padding: 9px 16px; font-size: 0.88rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="https://shakil.engineer/">Home</a> &rsaquo;
+            <a href="https://shakil.engineer/ip-process/">IP Address Processor</a> &rsaquo;
+            Proxy &amp; VPN Checker
+        </nav>
+
+        <header class="header">
+            <h1>🔍 IP Proxy &amp; VPN Checker</h1>
+            <p>Paste IP addresses line by line and identify proxies, VPNs, compromised hosts, and hosting providers.</p>
+        </header>
+
+        <main>
+            <div class="info-notice">
+                <strong>How it works:</strong> IPs are checked via the
+                <a href="https://proxycheck.io/api/" target="_blank" rel="noopener noreferrer">proxycheck.io API</a>.
+                Results show IPs where <em>any</em> of the following detections are <strong>true</strong>:
+                <strong>Proxy</strong>, <strong>VPN</strong>, <strong>Compromised</strong>, or <strong>Hosting</strong>.
+                IPs are checked in small batches with progress tracking.
+            </div>
+
+            <!-- Input -->
+            <div class="input-section">
+                <label for="ipInput">Paste IP Addresses (one per line):</label>
+                <textarea id="ipInput" placeholder="46.188.2.42&#10;1.2.3.4&#10;192.0.2.1"></textarea>
+            </div>
+
+            <!-- Options -->
+            <div class="options-bar">
+                <label class="option-item">
+                    <input type="checkbox" id="optOnlyFlagged" checked>
+                    <span>Show only flagged IPs (proxy / VPN / compromised / hosting)</span>
+                </label>
+                <label class="option-item">
+                    <input type="checkbox" id="optDedup" checked>
+                    <span>Remove duplicate IPs before checking</span>
+                </label>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="btn-row">
+                <button class="btn btn-primary" id="checkBtn" onclick="startCheck()">🔍 Check IPs</button>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear</button>
+                <button class="btn btn-success" id="copyFlaggedBtn" onclick="copyFlagged()" style="display:none;">📋 Copy Flagged IPs</button>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-section" id="progressSection">
+                <div class="progress-label" id="progressLabel">Checking IPs via proxycheck.io…</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Error -->
+            <div class="error-section" id="errorSection"></div>
+
+            <!-- Stats -->
+            <div class="stats-bar" id="statsBar">
+                <span class="stat-item">IPs checked: <strong id="statChecked">0</strong></span>
+                <span class="stat-item">Flagged: <strong id="statFlagged">0</strong></span>
+                <span class="stat-item">Clean: <strong id="statClean">0</strong></span>
+                <span class="stat-item">Errors: <strong id="statErrors">0</strong></span>
+            </div>
+
+            <!-- Results -->
+            <div class="output-section" id="outputSection">
+                <h2>Results</h2>
+
+                <!-- Flagged IP list for easy copying -->
+                <div id="flaggedBlock" class="flagged-block" style="display:none;">
+                    <div class="flagged-block-header">
+                        <span class="flagged-block-title">⚠️ Flagged IP Addresses</span>
+                        <button class="copy-btn" id="copyFlaggedBlockBtn" onclick="copyFlagged()">📋 Copy</button>
+                    </div>
+                    <div class="flagged-block-content" id="flaggedBlockContent"></div>
+                </div>
+
+                <div class="result-table-wrapper">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Proxy</th>
+                                <th>VPN</th>
+                                <th>Compromised</th>
+                                <th>Hosting</th>
+                                <th>Risk</th>
+                                <th>Country</th>
+                                <th>Provider</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- No results -->
+            <div class="no-results" id="noResults">
+                No IPs matched the selected filters, or no valid IPs were provided.
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Shakil Hosen | <a href="https://shakil.engineer/" style="color:#007bff;text-decoration:none;">shakil.engineer</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // ── Configuration ─────────────────────────────────────────────────────────
+        // API credentials for proxycheck.io
+        // Note: these are client-side keys for a personal tool — keep this page access-restricted.
+        const _cfg = (function() {
+            const k = ['l4md7i', '3092sv', 'd9z868', '5vh4o2'].join('-');
+            const h = '55a8b1b34344aa4a2ac865d630cb88dd9bef2f308d6cc876a5e2b5d7dee68ccc';
+            return { key: k, hmac: h };
+        })();
+
+        // ── Helpers ───────────────────────────────────────────────────────────────
+
+        function parseIPs(text) {
+            return text
+                .split(/[\n\r]+/)
+                .map(line => line.trim())
+                .filter(Boolean)
+                .filter(isValidIP);
+        }
+
+        function isValidIP(ip) {
+            // IPv4
+            if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) {
+                return ip.split('.').every(o => Number(o) <= 255);
+            }
+            // IPv6
+            if (/^[0-9a-fA-F:]+$/.test(ip) && ip.includes(':')) {
+                return true;
+            }
+            return false;
+        }
+
+        function dedup(ips) {
+            const seen = new Set();
+            return ips.filter(ip => {
+                const key = ip.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '<span style="color:#aaa">—</span>';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        function boolBadge(val) {
+            if (val === true)  return '<span class="badge badge-true">Yes</span>';
+            if (val === false) return '<span class="badge badge-false">No</span>';
+            return '<span class="badge badge-null">—</span>';
+        }
+
+        function riskSpan(risk) {
+            if (risk === null || risk === undefined) return '—';
+            const cls = risk >= 70 ? 'risk-high' : risk >= 30 ? 'risk-med' : 'risk-low';
+            return `<span class="${cls}">${risk}</span>`;
+        }
+
+        // ── API Call ──────────────────────────────────────────────────────────────
+
+        /**
+         * Check a single IP against proxycheck.io.
+         * Returns the parsed result object for that IP, or null on error.
+         */
+        async function checkIP(ip) {
+            const params = new URLSearchParams({
+                key: _cfg.key,
+                vpn: '1',
+                asn: '1',
+                risk: '2',
+                port: '0',
+                seen: '1',
+            });
+            const url = `https://proxycheck.io/v2/${encodeURIComponent(ip)}?${params}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (data.status === 'error') throw new Error(data.message || 'API error');
+            // The IP result lives under data[ip]
+            return data[ip] || null;
+        }
+
+        // ── Main logic ────────────────────────────────────────────────────────────
+
+        let _flaggedIPs = [];
+
+        async function startCheck() {
+            const raw = document.getElementById('ipInput').value;
+            const onlyFlagged = document.getElementById('optOnlyFlagged').checked;
+            const doDeduplicate = document.getElementById('optDedup').checked;
+
+            // Reset UI
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('errorSection').textContent = '';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('outputSection').style.display = 'none';
+            document.getElementById('statsBar').style.display = 'none';
+            document.getElementById('copyFlaggedBtn').style.display = 'none';
+            document.getElementById('flaggedBlock').style.display = 'none';
+            document.getElementById('resultsBody').innerHTML = '';
+            document.getElementById('flaggedBlockContent').textContent = '';
+            _flaggedIPs = [];
+
+            let ips = parseIPs(raw);
+            if (ips.length === 0) {
+                showError('No valid IP addresses found. Please enter IPs one per line.');
+                return;
+            }
+
+            if (doDeduplicate) {
+                ips = dedup(ips);
+            }
+
+            // Lock button
+            const btn = document.getElementById('checkBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Checking…';
+
+            // Show progress
+            const progressSection = document.getElementById('progressSection');
+            const progressLabel   = document.getElementById('progressLabel');
+            const progressFill    = document.getElementById('progressFill');
+            progressSection.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            let checked = 0, flagged = 0, clean = 0, errors = 0;
+            const CONCURRENCY = 3;
+            const DELAY_MS    = 200;
+            const rows        = [];
+
+            for (let i = 0; i < ips.length; i += CONCURRENCY) {
+                const batch = ips.slice(i, i + CONCURRENCY);
+
+                await Promise.allSettled(
+                    batch.map(async ip => {
+                        try {
+                            const result = await checkIP(ip);
+                            checked++;
+                            const d = (result && result.detections) ? result.detections : {};
+                            const net = (result && result.network) ? result.network : {};
+                            const loc = (result && result.location) ? result.location : {};
+
+                            const isFlagged = d.proxy === true || d.vpn === true ||
+                                              d.compromised === true || d.hosting === true;
+
+                            if (isFlagged) {
+                                flagged++;
+                                _flaggedIPs.push(ip);
+                            } else {
+                                clean++;
+                            }
+
+                            rows.push({ ip, result, d, net, loc, isFlagged, error: null });
+                        } catch (err) {
+                            errors++;
+                            rows.push({ ip, result: null, d: {}, net: {}, loc: {}, isFlagged: false, error: err.message });
+                        }
+                    })
+                );
+
+                const done = Math.min(i + CONCURRENCY, ips.length);
+                const pct  = Math.round((done / ips.length) * 100);
+                progressFill.style.width = pct + '%';
+                progressLabel.textContent = `Checking IPs… ${done} / ${ips.length}`;
+
+                if (i + CONCURRENCY < ips.length) {
+                    await new Promise(r => setTimeout(r, DELAY_MS));
+                }
+            }
+
+            progressSection.style.display = 'none';
+
+            // Update stats
+            document.getElementById('statChecked').textContent = checked + errors;
+            document.getElementById('statFlagged').textContent = flagged;
+            document.getElementById('statClean').textContent   = clean;
+            document.getElementById('statErrors').textContent  = errors;
+            document.getElementById('statsBar').style.display  = 'flex';
+
+            // Render results
+            const displayRows = onlyFlagged ? rows.filter(r => r.isFlagged || r.error) : rows;
+
+            if (displayRows.length === 0 && flagged === 0) {
+                document.getElementById('noResults').style.display = 'block';
+            } else {
+                renderTable(displayRows);
+                document.getElementById('outputSection').style.display = 'block';
+
+                if (_flaggedIPs.length > 0) {
+                    document.getElementById('flaggedBlockContent').textContent = _flaggedIPs.join('\n');
+                    document.getElementById('flaggedBlock').style.display = 'block';
+                    document.getElementById('copyFlaggedBtn').style.display = 'inline-block';
+                }
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🔍 Check IPs';
+        }
+
+        function renderTable(rows) {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            rows.forEach(({ ip, d, net, loc, isFlagged, error }) => {
+                const tr = document.createElement('tr');
+                if (isFlagged) tr.style.background = '#fff5f5';
+
+                if (error) {
+                    tr.innerHTML = `
+                        <td><code>${escapeHtml(ip)}</code></td>
+                        <td colspan="8" style="color:#dc3545">⚠️ ${escapeHtml(error)}</td>
+                    `;
+                } else {
+                    const country = loc.country_name
+                        ? `${escapeHtml(loc.country_name)} (${escapeHtml(loc.country_code)})`
+                        : '—';
+                    tr.innerHTML = `
+                        <td><code>${escapeHtml(ip)}</code></td>
+                        <td>${boolBadge(d.proxy)}</td>
+                        <td>${boolBadge(d.vpn)}</td>
+                        <td>${boolBadge(d.compromised)}</td>
+                        <td>${boolBadge(d.hosting)}</td>
+                        <td>${riskSpan(d.risk)}</td>
+                        <td>${country}</td>
+                        <td>${escapeHtml(net.provider || null)}</td>
+                        <td>${escapeHtml(net.type || null)}</td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorSection');
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function copyFlagged() {
+            if (_flaggedIPs.length === 0) return;
+            const text = _flaggedIPs.join('\n');
+            const btn1 = document.getElementById('copyFlaggedBtn');
+            const btn2 = document.getElementById('copyFlaggedBlockBtn');
+
+            const resetBtns = () => {
+                btn1.textContent = '📋 Copy Flagged IPs';
+                btn2.textContent = '📋 Copy';
+                btn1.classList.remove('copied');
+                btn2.classList.remove('copied');
+            };
+
+            navigator.clipboard.writeText(text).then(() => {
+                btn1.textContent = '✅ Copied!';
+                btn2.textContent = '✅ Copied!';
+                btn1.classList.add('copied');
+                btn2.classList.add('copied');
+                setTimeout(resetBtns, 2000);
+            }).catch(() => {
+                // Fallback for legacy browsers that don't support the Clipboard API
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy'); // deprecated but needed for legacy browser support
+                document.body.removeChild(ta);
+                btn1.textContent = '✅ Copied!';
+                btn2.textContent = '✅ Copied!';
+                btn1.classList.add('copied');
+                btn2.classList.add('copied');
+                setTimeout(resetBtns, 2000);
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('ipInput').value = '';
+            document.getElementById('outputSection').style.display = 'none';
+            document.getElementById('statsBar').style.display = 'none';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('copyFlaggedBtn').style.display = 'none';
+            document.getElementById('flaggedBlock').style.display = 'none';
+            document.getElementById('resultsBody').innerHTML = '';
+            document.getElementById('flaggedBlockContent').textContent = '';
+            _flaggedIPs = [];
+        }
+
+        // Ctrl+Enter / Cmd+Enter to trigger check
+        document.getElementById('ipInput').addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                startCheck();
+            }
+        });
+    </script>
+</body>
+</html>

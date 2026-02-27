@@ -1,4 +1,4 @@
-# Quick Setup Guide for shakil.live
+# Quick Setup Guide for shakil.engineer
 
 ## 🚀 Your website is ready! Here's how to make it live:
 
@@ -13,7 +13,7 @@
 ### Step 2: Configure DNS at name.com (5 minutes)
 Login to your name.com account and add these DNS records:
 
-**For root domain (shakil.live):**
+**For root domain (shakil.engineer):**
 ```
 Type: A Record
 Host: @
@@ -41,7 +41,7 @@ Value: shakil-mdshosen.github.io
 
 ### Step 3: Wait for DNS Propagation (24-48 hours)
 - DNS changes take time to propagate globally
-- You can check status at: https://whatsmydns.net/#A/shakil.live
+- You can check status at: https://whatsmydns.net/#A/shakil.engineer
 
 ### Step 4: Enable HTTPS (after DNS works)
 1. Return to GitHub Pages settings
@@ -51,7 +51,7 @@ Value: shakil-mdshosen.github.io
 
 ### Option A: Zoho Mail (Recommended - 100% Free)
 1. Sign up at https://zoho.com/mail
-2. Add domain `shakil.live`
+2. Add domain `shakil.engineer`
 3. Add these MX records at name.com:
    ```
    Type: MX, Host: @, Value: mx.zoho.com, Priority: 10
@@ -68,7 +68,7 @@ Value: shakil-mdshosen.github.io
 - [ ] GitHub Pages enabled
 - [ ] DNS records added at name.com
 - [ ] Wait 24-48 hours for propagation
-- [ ] Test website at https://shakil.live
+- [ ] Test website at https://shakil.engineer
 - [ ] Enable HTTPS in GitHub Pages
 - [ ] Choose and setup email hosting
 - [ ] Customize website content
@@ -78,4 +78,4 @@ Value: shakil-mdshosen.github.io
 - **Email issues**: Contact your chosen email provider
 - **GitHub Pages**: Check [GitHub Docs](https://docs.github.com/en/pages)
 
-Your website will be live at https://shakil.live once DNS propagates! 🎉
+Your website will be live at https://shakil.engineer once DNS propagates! 🎉

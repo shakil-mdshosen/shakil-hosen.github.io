@@ -1,17 +1,17 @@
 # shakil-mdshosen.github.io
 
-Personal website hosted on GitHub Pages with custom domain: **http://shakil.live/**
+Personal website hosted on GitHub Pages with custom domain: **http://shakil.engineer/**
 
 ## 🌐 Custom Domain Setup
 
-This repository is configured to use the custom domain `shakil.live` through GitHub Pages. The `CNAME` file contains the domain configuration.
+This repository is configured to use the custom domain `shakil.engineer` through GitHub Pages. The `CNAME` file contains the domain configuration.
 
 ### DNS Configuration Required
 
 To make your domain work, you need to configure DNS settings at your domain registrar (name.com):
 
 #### Option 1: Using A Records (Recommended for root domain)
-Add these A records for `shakil.live`:
+Add these A records for `shakil.engineer`:
 ```
 185.199.108.153
 185.199.109.153
@@ -22,7 +22,7 @@ Add these A records for `shakil.live`:
 #### Option 2: Using CNAME (for www subdomain)
 Add a CNAME record:
 ```
-www.shakil.live → shakil-mdshosen.github.io
+www.shakil.engineer → shakil-mdshosen.github.io
 ```
 
 ### GitHub Pages Settings
@@ -30,12 +30,12 @@ www.shakil.live → shakil-mdshosen.github.io
 2. Navigate to "Pages" section
 3. Ensure "Source" is set to "Deploy from a branch"
 4. Select "main" branch and "/ (root)" folder
-5. The custom domain should show `shakil.live`
+5. The custom domain should show `shakil.engineer`
 6. Enable "Enforce HTTPS" once DNS propagation is complete (24-48 hours)
 
 ## 📧 Free Email Hosting Options
 
-Since you want free email for your domain `shakil.live`, here are the best options:
+Since you want free email for your domain `shakil.engineer`, here are the best options:
 
 ### Option 1: Zoho Mail (Recommended - Completely Free)
 
@@ -48,7 +48,7 @@ Since you want free email for your domain `shakil.live`, here are the best optio
 **Setup Steps:**
 1. Sign up at [zoho.com/mail](https://zoho.com/mail)
 2. Choose "Add your existing domain"
-3. Enter `shakil.live`
+3. Enter `shakil.engineer`
 4. Verify domain ownership
 5. Add these DNS records at name.com:
 
@@ -66,7 +66,7 @@ zoho-verification=<verification-code-provided-by-zoho>
 
 **CNAME Records (optional but recommended):**
 ```
-mail.shakil.live → business.zoho.com
+mail.shakil.engineer → business.zoho.com
 ```
 
 ### Option 2: Gmail with Custom Domain (Google Workspace - 14-day free trial, then paid)
@@ -78,7 +78,7 @@ mail.shakil.live → business.zoho.com
 **Setup email forwarding to your existing email:**
 
 1. **At name.com (if they offer email forwarding):**
-   - Set up forwarding from `you@shakil.live` to your existing email
+   - Set up forwarding from `you@shakil.engineer` to your existing email
    - Add MX records provided by name.com
 
 2. **Using Cloudflare (Free):**
@@ -98,7 +98,7 @@ This site automatically deploys when you push changes to the main branch. The de
 
 1. Push code to main branch
 2. GitHub Actions builds and deploys the site
-3. Changes appear at `https://shakil.live` (once DNS is configured)
+3. Changes appear at `https://shakil.engineer` (once DNS is configured)
 
 ## 📁 File Structure
 
