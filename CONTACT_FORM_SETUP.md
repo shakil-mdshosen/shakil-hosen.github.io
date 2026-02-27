@@ -14,7 +14,7 @@ The contact form on `/contact.html` uses **FormSubmit.co** - a free form submiss
 
 ### Activation Steps:
 
-1. Have someone submit a test message through the contact form at `https://shakil.live/contact.html`
+1. Have someone submit a test message through the contact form at `https://shakil.engineer/contact.html`
 2. Check the inbox for **shakil@bnwp.org**
 3. Look for an email from FormSubmit.co with subject "Confirm your email address"
 4. Click the confirmation link in the email
@@ -23,7 +23,7 @@ The contact form on `/contact.html` uses **FormSubmit.co** - a free form submiss
 ## 📧 Email Features
 
 - **Sender's email** is included so you can reply directly
-- **Subject line** shows: "New message from shakil.live contact form"
+- **Subject line** shows: "New message from shakil.engineer contact form"
 - **Table format** for easy reading
 - **No captcha** for better user experience
 - **No API key required** - works immediately after activation
@@ -45,7 +45,7 @@ If you prefer a different service, here are alternatives:
 ## 🛠️ Testing
 
 After activation, test the form by:
-1. Visiting https://shakil.live/contact.html
+1. Visiting https://shakil.engineer/contact.html
 2. Filling out the form with test data
 3. Submitting it
 4. Checking shakil@bnwp.org for the email

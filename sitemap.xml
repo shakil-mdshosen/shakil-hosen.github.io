@@ -2,26 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
     <url>
-        <loc>https://shakil.live/</loc>
+        <loc>https://shakil.engineer/</loc>
         <lastmod>2025-01-02</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <image:image>
-            <image:loc>https://shakil.live/images/Shakil-2025.png</image:loc>
+            <image:loc>https://shakil.engineer/images/Shakil-2025.png</image:loc>
             <image:title>Shakil Hosen - Professional Photo</image:title>
             <image:caption>Shakil Hosen - EEE Student, Wikimedia Steward and Technology Enthusiast from Bangladesh</image:caption>
         </image:image>
     </url>
     <url>
-        <loc>https://shakil.live/payments/</loc>
+        <loc>https://shakil.engineer/payments/</loc>
         <lastmod>2025-01-02</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://shakil.live/tele/</loc>
+        <loc>https://shakil.engineer/tele/</loc>
         <lastmod>2026-01-30</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://shakil.engineer/ip-process/</loc>
+        <lastmod>2026-02-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
     </url>
 </urlset>

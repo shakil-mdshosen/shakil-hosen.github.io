@@ -83,4 +83,4 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 
 ## Access
 
-Visit: `https://shakil.live/tele/`
+Visit: `https://shakil.engineer/tele/`
