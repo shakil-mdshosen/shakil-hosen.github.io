@@ -275,6 +275,35 @@
             line-height: 1.7;
         }
 
+        /* Progress indicator */
+        .progress-section {
+            display: none;
+            margin-bottom: 16px;
+            padding: 14px 18px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 6px;
+        }
+        .progress-label {
+            font-size: 0.9rem;
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        .progress-track {
+            width: 100%;
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.2s;
+        }
+
         /* No results */
         .no-results {
             display: none;
@@ -346,6 +375,10 @@
                     <input type="checkbox" id="optRemovePrivate">
                     <span>Remove private/reserved IPs</span>
                 </label>
+                <label class="option-item" title="Queries the Wikimedia MetaWiki API to identify and remove IPs that are globally blocked on Wikimedia wikis. Requires internet access and may take time for large lists.">
+                    <input type="checkbox" id="optRemoveGlobalBlock">
+                    <span>Remove Wikimedia globally blocked IPs</span>
+                </label>
                 <span class="block-size-label">
                     IPs per block:&nbsp;
                     <input type="number" id="blockSize" value="50" min="1" max="10000">
@@ -354,10 +387,18 @@
 
             <!-- Action buttons -->
             <div class="btn-row">
-                <button class="btn btn-primary" onclick="processIPs()">⚡ Process IPs</button>
+                <button class="btn btn-primary" id="processBtn" onclick="processIPs()">⚡ Process IPs</button>
                 <button class="btn btn-danger" onclick="clearAll()">🗑️ Clear</button>
                 <button class="btn btn-success" id="downloadBtn" onclick="downloadAll()" style="display:none;">⬇️ Download All</button>
                 <button class="btn btn-secondary" id="copyAllBtn" onclick="copyAll()" style="display:none;">📋 Copy All</button>
+            </div>
+
+            <!-- Progress (shown during Wikimedia API lookup) -->
+            <div class="progress-section" id="progressSection">
+                <div class="progress-label" id="progressLabel">Checking Wikimedia global block list…</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
             </div>
 
             <!-- Stats -->
@@ -366,6 +407,7 @@
                 <span class="stat-item">Valid IPs parsed: <strong id="statValid">0</strong></span>
                 <span class="stat-item">Duplicates removed: <strong id="statDupes">0</strong></span>
                 <span class="stat-item">Private/reserved removed: <strong id="statPrivate">0</strong></span>
+                <span class="stat-item">Wikimedia blocked removed: <strong id="statGlobalBlock">0</strong></span>
                 <span class="stat-item">Output IPs: <strong id="statOutput">0</strong></span>
                 <span class="stat-item">Blocks: <strong id="statBlocks">0</strong></span>
             </div>
@@ -460,15 +502,72 @@
             return text.split(/[\n\r,;\s]+/).map(t => t.trim()).filter(Boolean);
         }
 
+        // ── Wikimedia global block check ─────────────────────────────────────────
+
+        /**
+         * Query the Wikimedia MetaWiki API to check whether a single IP address
+         * (or a range) is globally blocked.
+         * Uses origin=* for CORS; returns true if the IP is blocked.
+         */
+        async function isWikimediaGloballyBlocked(ip) {
+            const url = `https://meta.wikimedia.org/w/api.php?action=query&list=globalblocks&bgip=${encodeURIComponent(ip)}&bglimit=1&format=json&origin=*`;
+            try {
+                const res = await fetch(url);
+                if (!res.ok) return false;
+                const data = await res.json();
+                return !!(data.query && data.query.globalblocks && data.query.globalblocks.length > 0);
+            } catch {
+                // Network error or rate-limit — treat as not blocked so we don't
+                // accidentally discard IPs we couldn't verify.
+                return false;
+            }
+        }
+
+        /**
+         * Check all IPs against the Wikimedia global block list.
+         * Processes up to CONCURRENCY requests in parallel, then waits DELAY ms
+         * before the next batch to respect API etiquette.
+         * Calls onProgress(done, total) after each batch.
+         * Returns a Set of IPs that are globally blocked.
+         */
+        async function checkGloballyBlocked(ips, onProgress) {
+            const CONCURRENCY = 5;
+            const DELAY_MS = 100;
+            const blocked = new Set();
+
+            for (let i = 0; i < ips.length; i += CONCURRENCY) {
+                const batch = ips.slice(i, i + CONCURRENCY);
+                await Promise.allSettled(
+                    batch.map(ip =>
+                        isWikimediaGloballyBlocked(ip).then(isBlocked => {
+                            if (isBlocked) blocked.add(ip);
+                        })
+                    )
+                );
+                onProgress(Math.min(i + CONCURRENCY, ips.length), ips.length);
+                // Small pause between batches
+                if (i + CONCURRENCY < ips.length) {
+                    await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+                }
+            }
+            return blocked;
+        }
+
         // ── core processing ──────────────────────────────────────────────────────
 
-        function processIPs() {
+        async function processIPs() {
             const raw = document.getElementById('ipInput').value;
-            const removePorts  = document.getElementById('optRemovePorts').checked;
-            const deduplicate  = document.getElementById('optDedup').checked;
-            const sortIPs      = document.getElementById('optSort').checked;
-            const removePriv   = document.getElementById('optRemovePrivate').checked;
-            const blockSize    = Math.max(1, parseInt(document.getElementById('blockSize').value, 10) || 50);
+            const removePorts       = document.getElementById('optRemovePorts').checked;
+            const deduplicate       = document.getElementById('optDedup').checked;
+            const sortIPs           = document.getElementById('optSort').checked;
+            const removePriv        = document.getElementById('optRemovePrivate').checked;
+            const removeGlobalBlock = document.getElementById('optRemoveGlobalBlock').checked;
+            const blockSize         = Math.max(1, parseInt(document.getElementById('blockSize').value, 10) || 50);
+
+            // Disable process button while running
+            const processBtn = document.getElementById('processBtn');
+            processBtn.disabled = true;
+            processBtn.textContent = '⏳ Processing…';
 
             const tokens = tokenise(raw);
             const statInput = tokens.length;
@@ -521,14 +620,37 @@
                 });
             }
 
+            // Remove Wikimedia globally blocked IPs
+            let statGlobalBlock = 0;
+            if (removeGlobalBlock && ips.length > 0) {
+                const progressSection = document.getElementById('progressSection');
+                const progressLabel   = document.getElementById('progressLabel');
+                const progressFill    = document.getElementById('progressFill');
+                progressSection.style.display = 'block';
+                progressLabel.textContent = `Checking Wikimedia global block list… 0 / ${ips.length}`;
+                progressFill.style.width = '0%';
+
+                const blocked = await checkGloballyBlocked(ips, (done, total) => {
+                    const pct = Math.round((done / total) * 100);
+                    progressFill.style.width = pct + '%';
+                    progressLabel.textContent = `Checking Wikimedia global block list… ${done} / ${total}`;
+                });
+
+                progressSection.style.display = 'none';
+                const before = ips.length;
+                ips = ips.filter(ip => !blocked.has(ip));
+                statGlobalBlock = before - ips.length;
+            }
+
             const statOutput = ips.length;
 
             // Update stats
-            document.getElementById('statInput').textContent   = statInput;
-            document.getElementById('statValid').textContent   = statValid;
-            document.getElementById('statDupes').textContent   = statDupes;
-            document.getElementById('statPrivate').textContent = statPrivate;
-            document.getElementById('statOutput').textContent  = statOutput;
+            document.getElementById('statInput').textContent        = statInput;
+            document.getElementById('statValid').textContent        = statValid;
+            document.getElementById('statDupes').textContent        = statDupes;
+            document.getElementById('statPrivate').textContent      = statPrivate;
+            document.getElementById('statGlobalBlock').textContent  = statGlobalBlock;
+            document.getElementById('statOutput').textContent       = statOutput;
 
             // Build blocks
             const blocks = [];
@@ -551,6 +673,8 @@
                 noResults.style.display = 'block';
                 downloadBtn.style.display = 'none';
                 copyAllBtn.style.display = 'none';
+                processBtn.disabled = false;
+                processBtn.textContent = '⚡ Process IPs';
                 return;
             }
 
@@ -582,6 +706,9 @@
 
             // Store processed list globally for download/copyAll
             window._processedIPs = ips;
+
+            processBtn.disabled = false;
+            processBtn.textContent = '⚡ Process IPs';
         }
 
         // ── utility ──────────────────────────────────────────────────────────────
@@ -657,6 +784,7 @@
             document.getElementById('noResults').style.display = 'none';
             document.getElementById('downloadBtn').style.display = 'none';
             document.getElementById('copyAllBtn').style.display = 'none';
+            document.getElementById('progressSection').style.display = 'none';
             document.getElementById('blocksContainer').innerHTML = '';
             window._processedIPs = [];
         }
