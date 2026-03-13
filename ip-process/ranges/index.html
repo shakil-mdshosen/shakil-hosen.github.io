@@ -391,13 +391,9 @@
 
             <!-- Options -->
             <div class="options-bar">
-                <label class="option-item" title="Queries the Wikimedia MetaWiki API to identify IPs that are globally blocked on Wikimedia wikis. Requires internet access and may take time for large lists.">
-                    <input type="checkbox" id="optCheckGlobalBlock">
-                    <span>Check IPs against Wikimedia global block</span>
-                </label>
-                <label class="option-item" title="When checked, globally blocked IPs are removed from the output. When unchecked, they are still shown but marked.">
+                <label class="option-item" title="Queries the Wikimedia MetaWiki API to identify and remove IPs that are globally blocked on Wikimedia wikis. Requires internet access and may take time for large lists.">
                     <input type="checkbox" id="optRemoveGlobalBlock">
-                    <span>Remove Wikimedia globally blocked IPs from output</span>
+                    <span>Remove Wikimedia globally blocked IPs</span>
                 </label>
                 <span class="block-size-label">
                     IPs per block:&nbsp;
@@ -447,6 +443,7 @@
 
         <footer>
             <p>🔙 Back to: <a href="/ip-process/" style="color:#007bff;text-decoration:none;">IP Address Processor</a> &mdash; clean and deduplicate IP lists</p>
+            <p>📖 <a href="/ip-process/doc/" style="color:#007bff;text-decoration:none;">Documentation</a> &mdash; learn how these tools work</p>
             <p>&copy; 2025 Shakil Hosen | <a href="https://shakil.engineer/" style="color:#007bff;text-decoration:none;">shakil.engineer</a></p>
         </footer>
     </div>
@@ -619,7 +616,6 @@
 
         async function expandRanges() {
             const raw = document.getElementById('rangeInput').value;
-            const checkGlobal  = document.getElementById('optCheckGlobalBlock').checked;
             const removeGlobal = document.getElementById('optRemoveGlobalBlock').checked;
             const blockSize    = Math.max(1, parseInt(document.getElementById('blockSize').value, 10) || 50);
 
@@ -664,7 +660,7 @@
 
             // Check Wikimedia global block
             let statGlobalBlock = 0;
-            if (checkGlobal && allIPs.length > 0) {
+            if (removeGlobal && allIPs.length > 0) {
                 const progressSection = document.getElementById('progressSection');
                 const progressLabel   = document.getElementById('progressLabel');
                 const progressFill    = document.getElementById('progressFill');
@@ -680,13 +676,9 @@
 
                 progressSection.style.display = 'none';
 
-                if (removeGlobal) {
-                    const before = allIPs.length;
-                    allIPs = allIPs.filter(ip => !blocked.has(ip));
-                    statGlobalBlock = before - allIPs.length;
-                } else {
-                    statGlobalBlock = blocked.size;
-                }
+                const before = allIPs.length;
+                allIPs = allIPs.filter(ip => !blocked.has(ip));
+                statGlobalBlock = before - allIPs.length;
             }
 
             const statOutput = allIPs.length;
@@ -752,19 +744,6 @@
                 expandRanges();
             }
         });
-
-        // Keep the "Remove blocked" checkbox in sync with "Check" checkbox
-        document.getElementById('optCheckGlobalBlock').addEventListener('change', function() {
-            const removeChk = document.getElementById('optRemoveGlobalBlock');
-            if (!this.checked) {
-                removeChk.checked = false;
-                removeChk.disabled = true;
-            } else {
-                removeChk.disabled = false;
-            }
-        });
-        // Initialise disabled state
-        document.getElementById('optRemoveGlobalBlock').disabled = true;
     </script>
 </body>
 </html>

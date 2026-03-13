@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO Meta Tags -->
+    <title>IP Tools Documentation | Shakil Hosen</title>
+    <meta name="title" content="IP Tools Documentation | Shakil Hosen">
+    <meta name="description" content="Documentation for the IP Address Processor and IP Range Expander tools. Learn how they work, what options are available, and how to use them effectively.">
+    <meta name="author" content="Shakil Hosen">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://shakil.engineer/ip-process/doc/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shakil.engineer/ip-process/doc/">
+    <meta property="og:title" content="IP Tools Documentation | Shakil Hosen">
+    <meta property="og:description" content="Documentation for the IP Address Processor and IP Range Expander tools.">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <link rel="alternate icon" href="../../favicon.ico">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.7;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 48px 52px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 28px;
+        }
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover { text-decoration: underline; }
+
+        /* Page header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .page-header h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: #6c757d;
+            font-size: 1rem;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* Table of contents */
+        .toc {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px 28px;
+            margin-bottom: 40px;
+        }
+        .toc h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            margin: 0 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .toc ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .toc li { margin-bottom: 6px; }
+        .toc a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        .toc a:hover { text-decoration: underline; }
+
+        /* Section headings */
+        h2.section-title {
+            color: #2c3e50;
+            font-size: 1.45rem;
+            font-weight: 600;
+            margin-top: 48px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        h3.subsection-title {
+            color: #495057;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 28px;
+            margin-bottom: 10px;
+        }
+
+        /* Tool card links */
+        .tool-cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+        }
+        .tool-card {
+            flex: 1 1 260px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .tool-card:hover {
+            box-shadow: 0 4px 14px rgba(0,123,255,0.12);
+            border-color: #007bff;
+        }
+        .tool-card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .tool-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+            color: #007bff;
+        }
+        .tool-card p {
+            margin: 0;
+            font-size: 0.88rem;
+            color: #6c757d;
+        }
+
+        /* Option table */
+        .option-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 0.92rem;
+        }
+        .option-table th {
+            background: #e9ecef;
+            color: #495057;
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid #dee2e6;
+        }
+        .option-table td {
+            padding: 10px 14px;
+            border: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        .option-table tr:nth-child(even) td { background: #f8f9fa; }
+
+        /* Info boxes */
+        .info-box {
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 0.92rem;
+        }
+        .info-box.note {
+            background: #e8f4fd;
+            border-left: 4px solid #007bff;
+            color: #1a4f7a;
+        }
+        .info-box.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #664d03;
+        }
+        .info-box strong { font-weight: 700; }
+
+        /* Code / inline */
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.88em;
+            background: #f0f4f8;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1px 5px;
+            color: #c7254e;
+        }
+
+        pre.code-block {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.88rem;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 16px 18px;
+            overflow-x: auto;
+            line-height: 1.6;
+            color: #212529;
+            white-space: pre;
+        }
+
+        /* Step list */
+        ol.steps {
+            padding-left: 22px;
+        }
+        ol.steps li {
+            margin-bottom: 10px;
+        }
+
+        /* Process flow */
+        .flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        .flow-step {
+            background: #e8f4fd;
+            border: 1px solid #b6d4f0;
+            border-radius: 6px;
+            padding: 7px 14px;
+            color: #1a4f7a;
+            font-weight: 500;
+        }
+        .flow-arrow {
+            color: #adb5bd;
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+        footer a { color: #007bff; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media screen and (max-width: 640px) {
+            body { padding: 10px; }
+            .container { padding: 24px 20px; }
+            .page-header h1 { font-size: 1.5rem; }
+            .tool-cards { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="https://shakil.engineer/">Home</a> &rsaquo;
+            <a href="/ip-process/">IP Address Processor</a> &rsaquo;
+            Documentation
+        </nav>
+
+        <!-- Page header -->
+        <header class="page-header">
+            <h1>📖 IP Tools Documentation</h1>
+            <p>A comprehensive reference for the IP Address Processor and IP Range Expander — how they work, what each option does, and how to get the best results.</p>
+        </header>
+
+        <main>
+
+            <!-- Quick links to tools -->
+            <div class="tool-cards">
+                <a href="/ip-process/" class="tool-card">
+                    <div class="tool-card-icon">🌐</div>
+                    <h3>IP Address Processor</h3>
+                    <p>Clean, deduplicate, sort, and filter raw IP address lists.</p>
+                </a>
+                <a href="/ip-process/ranges/" class="tool-card">
+                    <div class="tool-card-icon">📡</div>
+                    <h3>IP Range Expander</h3>
+                    <p>Expand CIDR notation ranges into full lists of individual IP addresses.</p>
+                </a>
+            </div>
+
+            <!-- Table of contents -->
+            <nav class="toc" aria-label="Table of contents">
+                <h2>Contents</h2>
+                <ol>
+                    <li><a href="#ip-processor">IP Address Processor</a>
+                        <ol>
+                            <li><a href="#ip-processor-overview">Overview</a></li>
+                            <li><a href="#ip-processor-how-it-works">How It Works</a></li>
+                            <li><a href="#ip-processor-options">Available Options</a></li>
+                            <li><a href="#ip-processor-usage">Usage Guide</a></li>
+                        </ol>
+                    </li>
+                    <li><a href="#range-expander">IP Range Expander</a>
+                        <ol>
+                            <li><a href="#range-expander-overview">Overview</a></li>
+                            <li><a href="#range-expander-how-it-works">How It Works</a></li>
+                            <li><a href="#range-expander-options">Available Options</a></li>
+                            <li><a href="#range-expander-usage">Usage Guide</a></li>
+                        </ol>
+                    </li>
+                    <li><a href="#wikimedia-global-block">Wikimedia Global Block Check</a></li>
+                    <li><a href="#output-format">Output Format &amp; Blocks</a></li>
+                    <li><a href="#privacy">Privacy &amp; Data Handling</a></li>
+                </ol>
+            </nav>
+
+            <!-- ── Section 1: IP Address Processor ─────────────────────────── -->
+            <section id="ip-processor">
+                <h2 class="section-title">1. IP Address Processor</h2>
+
+                <h3 class="subsection-title" id="ip-processor-overview">Overview</h3>
+                <p>
+                    The <a href="/ip-process/">IP Address Processor</a> is a client-side tool that accepts a raw, unstructured list of IP addresses and transforms it into a clean, ready-to-use list. It handles mixed input formats, strips port numbers, removes duplicates and private ranges, and optionally checks addresses against the Wikimedia global block list.
+                </p>
+
+                <h3 class="subsection-title" id="ip-processor-how-it-works">How It Works</h3>
+                <p>All processing happens entirely in your browser — no data is sent to any server (with the exception of the optional Wikimedia API check, which queries the public Wikimedia MetaWiki API using only the IP addresses you provide).</p>
+
+                <div class="flow" aria-label="Processing pipeline">
+                    <span class="flow-step">Tokenise input</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Strip ports</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Validate IPs</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Remove private</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Deduplicate</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Sort</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Wikimedia check</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Render blocks</span>
+                </div>
+
+                <ol class="steps">
+                    <li><strong>Tokenisation</strong> — The raw input is split on newlines, commas, semicolons, spaces, and tabs. Each token is trimmed of surrounding whitespace.</li>
+                    <li><strong>Port stripping</strong> — When enabled, port suffixes are removed. IPv4 addresses in the form <code>1.2.3.4:8080</code> become <code>1.2.3.4</code>. Bracketed IPv6 addresses such as <code>[::1]:443</code> are unwrapped to <code>::1</code>.</li>
+                    <li><strong>Validation</strong> — Each token is tested against a lenient IPv4 pattern (four dot-separated octets, each 0–255) and an IPv6 pattern (colon-containing hex strings). Tokens that do not match either pattern are silently discarded.</li>
+                    <li><strong>Private / reserved IP removal</strong> — When enabled, addresses matching RFC 1918 private ranges, loopback (<code>127.0.0.0/8</code>, <code>::1</code>), link-local (<code>169.254.0.0/16</code>, <code>fe80::/10</code>), and unique-local (<code>fc00::/7</code>) ranges are removed.</li>
+                    <li><strong>Deduplication</strong> — When enabled, duplicate addresses are removed while preserving the first-seen order. The comparison is case-insensitive for IPv6.</li>
+                    <li><strong>Sorting</strong> — When enabled, IPv4 addresses are sorted numerically; IPv6 addresses are sorted lexicographically.</li>
+                    <li><strong>Wikimedia global block check</strong> — When enabled, each remaining IP is queried against the Wikimedia MetaWiki API. Globally blocked IPs are removed from the output. See <a href="#wikimedia-global-block">§ Wikimedia Global Block Check</a> for details.</li>
+                    <li><strong>Block rendering</strong> — The final list is split into copy-ready blocks of a configurable size (default 50 IPs per block).</li>
+                </ol>
+
+                <h3 class="subsection-title" id="ip-processor-options">Available Options</h3>
+                <table class="option-table" aria-label="IP Address Processor options">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Remove port numbers</strong></td>
+                            <td>On</td>
+                            <td>Strips port suffixes from IPv4 (<code>:port</code>) and bracketed IPv6 (<code>[addr]:port</code>) addresses before any other processing.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remove duplicate IPs</strong></td>
+                            <td>On</td>
+                            <td>Retains only the first occurrence of each unique IP address, preserving the original input order.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sort IPs</strong></td>
+                            <td>Off</td>
+                            <td>Sorts the final list. IPv4 addresses are sorted numerically (e.g. <code>10.0.0.2</code> before <code>10.0.0.10</code>); IPv6 addresses are sorted as strings.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remove private/reserved IPs</strong></td>
+                            <td>Off</td>
+                            <td>Removes addresses in RFC 1918 private ranges, loopback, link-local, and unique-local ranges.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remove Wikimedia globally blocked IPs</strong></td>
+                            <td>Off</td>
+                            <td>Queries the Wikimedia MetaWiki API for each IP and removes any that are globally blocked. Requires internet access; may take time for large lists.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IPs per block</strong></td>
+                            <td>50</td>
+                            <td>Controls how many IP addresses appear in each output block. Accepts values from 1 to 10,000.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title" id="ip-processor-usage">Usage Guide</h3>
+                <ol class="steps">
+                    <li>Navigate to the <a href="/ip-process/">IP Address Processor</a>.</li>
+                    <li>Paste your IP addresses into the input field. The tool accepts mixed formats — one IP per line, comma-separated, space-separated, or any combination.</li>
+                    <li>Select the processing options that apply to your use case.</li>
+                    <li>Click <strong>⚡ Process IPs</strong> (or press <kbd>Ctrl+Enter</kbd> / <kbd>Cmd+Enter</kbd>).</li>
+                    <li>Review the statistics bar to see how many IPs were parsed, deduplicated, and removed.</li>
+                    <li>Copy individual blocks using the <strong>📋 Copy Block</strong> button, or download / copy the entire list using the buttons above the results.</li>
+                </ol>
+
+                <div class="info-box note">
+                    <strong>Tip:</strong> If you are working with a large list and need to check against the Wikimedia global block list, consider pre-filtering with other options first (e.g., remove private IPs and duplicates) to reduce the number of API calls required.
+                </div>
+
+                <h4>Accepted Input Formats</h4>
+                <pre class="code-block">192.168.1.1:8080
+10.0.0.1
+[2001:db8::2]:8080
+203.0.113.1, 203.0.113.2 203.0.113.3
+198.51.100.4;198.51.100.5</pre>
+            </section>
+
+            <!-- ── Section 2: IP Range Expander ─────────────────────────────── -->
+            <section id="range-expander">
+                <h2 class="section-title">2. IP Range Expander</h2>
+
+                <h3 class="subsection-title" id="range-expander-overview">Overview</h3>
+                <p>
+                    The <a href="/ip-process/ranges/">IP Range Expander</a> accepts one or more IPv4 CIDR ranges and expands each into the complete set of individual IP addresses it contains. It is useful when you need to work with individual IPs from a known subnet, or when you want to cross-reference a CIDR block against a block list.
+                </p>
+
+                <h3 class="subsection-title" id="range-expander-how-it-works">How It Works</h3>
+                <p>Like the IP Address Processor, all computation runs entirely in your browser. The CIDR expansion algorithm uses standard 32-bit integer arithmetic to enumerate every address in the specified range.</p>
+
+                <div class="flow" aria-label="Range expansion pipeline">
+                    <span class="flow-step">Parse CIDR lines</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Validate ranges</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Expand to IPs</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Wikimedia check</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Render blocks</span>
+                </div>
+
+                <ol class="steps">
+                    <li><strong>Parsing</strong> — Each non-empty line of the input is treated as a single CIDR range. Whitespace is trimmed.</li>
+                    <li><strong>Validation</strong> — Each range is checked for:
+                        <ul>
+                            <li>Correct CIDR format: <code>a.b.c.d/prefix</code></li>
+                            <li>A valid IPv4 base address (four octets, each 0–255)</li>
+                            <li>A valid prefix length between 8 and 32 (ranges larger than <code>/8</code> are rejected to prevent accidental expansion of more than 16 million IPs)</li>
+                        </ul>
+                        Invalid lines are reported as errors beneath the input field; valid lines continue to be processed.
+                    </li>
+                    <li><strong>Expansion</strong> — The base address is masked to the network address, then every host address from the network address to the broadcast address is enumerated and added to the list.</li>
+                    <li><strong>Wikimedia global block check</strong> — When enabled, each expanded IP is queried against the Wikimedia MetaWiki API and blocked IPs are removed. See <a href="#wikimedia-global-block">§ Wikimedia Global Block Check</a> for details.</li>
+                    <li><strong>Block rendering</strong> — The final list is divided into copy-ready blocks of the configured size.</li>
+                </ol>
+
+                <h3 class="subsection-title" id="range-expander-options">Available Options</h3>
+                <table class="option-table" aria-label="IP Range Expander options">
+                    <thead>
+                        <tr>
+                            <th>Option</th>
+                            <th>Default</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Remove Wikimedia globally blocked IPs</strong></td>
+                            <td>Off</td>
+                            <td>Queries the Wikimedia MetaWiki API for each expanded IP and removes any that are globally blocked. Requires internet access; may take significant time for large ranges.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IPs per block</strong></td>
+                            <td>50</td>
+                            <td>Controls how many IP addresses appear in each output block. Accepts values from 1 to 10,000.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="subsection-title" id="range-expander-usage">Usage Guide</h3>
+                <ol class="steps">
+                    <li>Navigate to the <a href="/ip-process/ranges/">IP Range Expander</a>.</li>
+                    <li>Enter one CIDR range per line in the input field, for example:
+                        <pre class="code-block">178.176.72.0/24
+203.0.113.0/28</pre>
+                    </li>
+                    <li>Select options as needed.</li>
+                    <li>Click <strong>📡 Expand Ranges</strong> (or press <kbd>Ctrl+Enter</kbd> / <kbd>Cmd+Enter</kbd>).</li>
+                    <li>Any invalid ranges are displayed as error messages. Valid ranges are expanded immediately.</li>
+                    <li>Copy individual blocks or the full list using the provided buttons.</li>
+                </ol>
+
+                <div class="info-box warning">
+                    <strong>Size limit:</strong> Ranges with a prefix shorter than <code>/8</code> (i.e., containing more than 16,777,216 addresses) are rejected. If you need to work with very large ranges, split them into smaller subnets before expanding.
+                </div>
+            </section>
+
+            <!-- ── Section 3: Wikimedia Global Block ────────────────────────── -->
+            <section id="wikimedia-global-block">
+                <h2 class="section-title">3. Wikimedia Global Block Check</h2>
+
+                <p>
+                    Both tools offer an optional check against the <a href="https://meta.wikimedia.org/wiki/Global_blocks" target="_blank" rel="noopener noreferrer">Wikimedia global block list</a>. This list contains IP addresses and ranges that have been blocked across all Wikimedia wikis (Wikipedia, Wiktionary, Wikidata, etc.) due to persistent abuse or vandalism.
+                </p>
+
+                <h3 class="subsection-title">How the Check Works</h3>
+                <p>Each IP address is individually queried against the <a href="https://www.mediawiki.org/wiki/API:Globalblocks" target="_blank" rel="noopener noreferrer">Wikimedia MetaWiki API</a> (<code>list=globalblocks</code>) using your browser's <code>fetch</code> API with <code>origin=*</code> for cross-origin access. No intermediate server is involved — requests go directly from your browser to Wikimedia.</p>
+
+                <p>To avoid overloading the API and to comply with responsible API usage:</p>
+                <ul>
+                    <li>Requests are sent in <strong>batches of 5</strong> concurrent connections.</li>
+                    <li>A <strong>100 ms pause</strong> is inserted between each batch.</li>
+                    <li>If a request fails (network error, timeout, or rate-limiting), the IP is conservatively treated as <em>not</em> blocked, so no IP is accidentally removed due to a transient error.</li>
+                </ul>
+
+                <div class="info-box note">
+                    <strong>Performance note:</strong> At 5 concurrent requests with a 100 ms inter-batch delay, checking 500 IPs takes approximately 10 seconds. For lists of 1,000 or more IPs, expect proportionally longer processing times. A progress bar is displayed during the check.
+                </div>
+
+                <h3 class="subsection-title">Privacy Considerations</h3>
+                <p>When you enable the Wikimedia global block check, the IP addresses in your list are sent to the Wikimedia MetaWiki API (<code>meta.wikimedia.org</code>). Wikimedia's standard <a href="https://foundation.wikimedia.org/wiki/Privacy_policy" target="_blank" rel="noopener noreferrer">privacy policy</a> applies to those requests. No other data is transmitted externally by these tools.</p>
+            </section>
+
+            <!-- ── Section 4: Output Format ──────────────────────────────────── -->
+            <section id="output-format">
+                <h2 class="section-title">4. Output Format &amp; Blocks</h2>
+
+                <p>Both tools display results as numbered blocks, each containing up to a configurable number of IP addresses (default: 50). This block structure is designed to make it easy to copy manageable subsets of a large IP list into other applications.</p>
+
+                <h3 class="subsection-title">Copying Output</h3>
+                <ul>
+                    <li><strong>📋 Copy Block</strong> — Copies the IPs in a single block to the clipboard, one IP per line.</li>
+                    <li><strong>📋 Copy All</strong> — Copies the entire processed list to the clipboard, one IP per line.</li>
+                    <li><strong>⬇️ Download All</strong> — Downloads the entire list as a plain text file (<code>.txt</code>), one IP per line.</li>
+                </ul>
+
+                <h3 class="subsection-title">Statistics Bar</h3>
+                <p>After processing, a statistics bar is displayed showing key metrics such as the number of IPs parsed, duplicates removed, private IPs removed, Wikimedia-blocked IPs removed, and the final output count. Use these figures to verify that the tool is behaving as expected.</p>
+            </section>
+
+            <!-- ── Section 5: Privacy ────────────────────────────────────────── -->
+            <section id="privacy">
+                <h2 class="section-title">5. Privacy &amp; Data Handling</h2>
+
+                <ul>
+                    <li>All parsing, validation, deduplication, sorting, and expansion logic runs <strong>entirely in your browser</strong>. Your IP data is never sent to any server operated by this site.</li>
+                    <li>The <strong>optional</strong> Wikimedia global block check is the only operation that transmits data externally. It sends IP addresses to the public Wikimedia MetaWiki API over HTTPS.</li>
+                    <li>No cookies, local storage, or analytics are used by these tools.</li>
+                    <li>Your input is not retained after you leave or refresh the page.</li>
+                </ul>
+            </section>
+
+        </main>
+
+        <footer>
+            <p>
+                🌐 <a href="/ip-process/">IP Address Processor</a>
+                &ensp;|&ensp;
+                📡 <a href="/ip-process/ranges/">IP Range Expander</a>
+                &ensp;|&ensp;
+                🏠 <a href="https://shakil.engineer/">shakil.engineer</a>
+            </p>
+            <p>&copy; 2025 Shakil Hosen</p>
+        </footer>
+
+    </div>
+</body>
+</html>
