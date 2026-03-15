@@ -296,40 +296,96 @@
       font-weight: 300;
     }
 
-    /* Money envelope */
-    .card-envelope {
-      display: inline-block;
-      background: linear-gradient(135deg, #d4a017, #f0c040);
-      border-radius: 16px;
-      padding: 16px 36px;
-      margin: 0 auto 20px;
+    /* ── Modern Salami Amount Card ── */
+    .money-reveal-card {
       position: relative;
-      box-shadow: 0 4px 20px rgba(212,160,23,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      width: 82%;
+      max-width: 248px;
+      margin: 0 auto 22px;
+      border-radius: 20px;
+      background: linear-gradient(155deg, #0f2918 0%, #0d1f33 55%, #0a1525 100%);
+      padding: 20px 28px 16px;
+      box-shadow:
+        0 0 0 1.5px rgba(212,160,23,0.55),
+        0 0 28px rgba(212,160,23,0.16),
+        0 10px 36px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      text-align: center;
+      overflow: hidden;
+      animation: cardPulse 3s ease-in-out infinite alternate;
     }
-    .card-envelope::before {
-      content: '💌';
+    @keyframes cardPulse {
+      from { box-shadow: 0 0 0 1.5px rgba(212,160,23,0.55), 0 0 18px rgba(212,160,23,0.12), 0 10px 36px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06); }
+      to   { box-shadow: 0 0 0 1.5px rgba(212,160,23,0.9),  0 0 42px rgba(212,160,23,0.32), 0 10px 36px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06); }
+    }
+    .money-reveal-card::before {
+      content: '';
       position: absolute;
-      top: -14px; left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.5rem;
+      top: -80%; left: -40%;
+      width: 28%; height: 260%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,0.07), transparent);
+      animation: cardShine 6s ease-in-out infinite;
+      pointer-events: none;
     }
-    .card-salami-label {
+    @keyframes cardShine {
+      0%, 100% { left: -40%; opacity: 0; }
+      25%  { opacity: 1; }
+      60%  { left: 150%; opacity: 0; }
+    }
+    .money-card-label {
       font-family: 'Poppins', sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 2px;
+      font-size: 0.63rem;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
-      color: rgba(26,26,46,0.75);
-      margin-bottom: 4px;
+      color: rgba(240,192,64,0.65);
       font-weight: 600;
+      margin-bottom: 10px;
     }
-    .card-amount {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 7vw, 3rem);
-      font-weight: 700;
-      color: #1a1a2e;
+    .money-amount-wrap {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 3px;
       line-height: 1;
+      margin-bottom: 12px;
     }
-    .card-amount span { font-size: 0.45em; vertical-align: top; margin-top: 0.35em; display: inline-block; }
+    .money-sym {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gold2);
+      margin-top: 0.5em;
+      flex-shrink: 0;
+    }
+    .money-num {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 9vw, 3.6rem);
+      font-weight: 700;
+      background: linear-gradient(135deg, #f0c040 0%, #fff5cc 50%, #c8860a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.05;
+      display: inline-block;
+      min-width: 2ch;
+    }
+    .money-divider {
+      width: 52%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(212,160,23,0.5), transparent);
+      margin: 0 auto 10px;
+    }
+    .money-tag-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 1.5px;
+      color: rgba(240,192,64,0.55);
+      text-transform: uppercase;
+    }
 
     /* Signature */
     .card-signature-area {
@@ -479,9 +535,14 @@
         and your life with countless blessings. 🌷
       </p>
 
-      <div class="card-envelope">
-        <p class="card-salami-label">🎁 Salami</p>
-        <p class="card-amount"><span>৳</span><span id="card-amount-val">5</span></p>
+      <div class="money-reveal-card">
+        <p class="money-card-label">🎁 &nbsp; Eid Salami</p>
+        <div class="money-amount-wrap">
+          <span class="money-sym">৳</span>
+          <span class="money-num" id="card-amount-val" aria-live="polite" aria-atomic="true">0</span>
+        </div>
+        <div class="money-divider"></div>
+        <div class="money-tag-row"><span>✦</span><span>With Love</span><span>✦</span></div>
       </div>
 
       <div class="card-signature-area">
@@ -577,6 +638,29 @@ const blessings = [
   "This Eid, I pray that happiness follows you wherever you go, and that all your wishes and dreams come true. You are truly special! ✨"
 ];
 
+/* Time-based blessing: rotates every 10 minutes, mixed with name for uniqueness */
+function getBlessing(name) {
+  const slot     = Math.floor(Date.now() / (10 * 60 * 1000));
+  const nameHash = [...name.toLowerCase()].reduce((s, c) => s + c.charCodeAt(0), 0);
+  return blessings[(slot + nameHash) % blessings.length];
+}
+
+/* Salami amounts (realistic BDT) */
+const salamiAmounts = [50, 100, 150, 200, 300, 500, 1000];
+
+/* Counter animation */
+function animateCounter(el, target, duration) {
+  const startTime = performance.now();
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased    = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+    el.textContent = Math.round(target * eased);
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target; // guarantee exact final value
+  }
+  requestAnimationFrame(step);
+}
+
 /* Current recipient name (kept in module scope for reuse) */
 let currentRecipientName = 'salami';
 
@@ -594,12 +678,11 @@ function generateCard() {
 
   currentRecipientName = name;
 
-  const amount   = Math.floor(Math.random() * 10) + 1;
-  const blessing = blessings[Math.floor(Math.random() * blessings.length)];
+  const amount   = salamiAmounts[Math.floor(Math.random() * salamiAmounts.length)];
+  const blessing = getBlessing(name);
 
-  document.getElementById('card-name').textContent      = name;
-  document.getElementById('card-amount-val').textContent = amount;
-  document.getElementById('card-blessing').textContent  = blessing;
+  document.getElementById('card-name').textContent    = name;
+  document.getElementById('card-blessing').textContent = blessing;
 
   const section = document.getElementById('card-section');
   section.style.display = 'flex';
@@ -610,6 +693,13 @@ function generateCard() {
   });
 
   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  /* Animate the amount counter after a short reveal delay; fallback ensures correct value */
+  const amountEl = document.getElementById('card-amount-val');
+  amountEl.textContent = 0;
+  setTimeout(() => animateCounter(amountEl, amount, 900), 300);
+  /* Safety fallback: if rAF never fires, show correct value after animation window */
+  setTimeout(() => { if (Number(amountEl.textContent) !== amount) amountEl.textContent = amount; }, 1400);
 
   confettiBurst();
 }
