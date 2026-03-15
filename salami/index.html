@@ -645,8 +645,10 @@ function getBlessing(name) {
   return blessings[(slot + nameHash) % blessings.length];
 }
 
-/* Salami amounts (realistic BDT) */
-const salamiAmounts = [50, 100, 150, 200, 300, 500, 1000];
+/* Salami amount: random 1–10 tk */
+function getRandomSalamiAmount() {
+  return Math.floor(Math.random() * 10) + 1;
+}
 
 /* Counter animation */
 function animateCounter(el, target, duration) {
@@ -678,7 +680,7 @@ function generateCard() {
 
   currentRecipientName = name;
 
-  const amount   = salamiAmounts[Math.floor(Math.random() * salamiAmounts.length)];
+  const amount   = getRandomSalamiAmount();
   const blessing = getBlessing(name);
 
   document.getElementById('card-name').textContent    = name;
@@ -710,8 +712,23 @@ function downloadCard() {
   html2canvas(card, {
     scale: 2,
     useCORS: true,
+    allowTaint: true,
     backgroundColor: null,
-    logging: false
+    logging: false,
+    onclone: function(clonedDoc) {
+      /* html2canvas does not support -webkit-background-clip:text / -webkit-text-fill-color.
+         Replace gradient text with a solid gold colour so the text is visible in the download. */
+      const gradientTextEls = clonedDoc.querySelectorAll('.card-headline, .money-num');
+      gradientTextEls.forEach(function(el) {
+        el.style.webkitTextFillColor = '#f0c040';
+        el.style.backgroundImage     = 'none';
+        el.style.color               = '#f0c040';
+      });
+      /* Freeze any CSS animations so the captured frame matches what the user sees */
+      const style = clonedDoc.createElement('style');
+      style.textContent = '* { animation-play-state: paused !important; }';
+      clonedDoc.head.appendChild(style);
+    }
   }).then(function(canvas) {
     const link  = document.createElement('a');
     const safeName = currentRecipientName.replace(/\s+/g, '_');
