@@ -30,15 +30,21 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 - **Fullscreen Mode**: Distraction-free reading experience
 - **Progress Bar**: Visual indication of script progress
 - **Speed Indicator**: Real-time display of current scroll speed
+- **Timer**: Elapsed time and estimated time remaining on the stage
+- **Custom Scripts**: Create, edit, use and delete your own scripts (saved in your browser)
 
 ### User Interface
-- **Professional Design**: Clean, modern interface optimized for readability
-- **Dark Theme**: Reduces eye strain during long sessions
-- **Responsive Layout**: Works on desktop, tablet, and mobile devices
+- **Site-wide Design System**: Uses the shared `/assets/tools.css` and `/assets/tools.js`, so it matches the home page (header, footer, typography, colours)
+- **Dark and Light Themes**: Theme toggle in the header, shared with the home page (`theme` key in localStorage); the prompter stage stays high-contrast (black by default) in both themes
+- **Layout**: Settings sidebar (script, speed, font size, stage colours, voice recording) next to a large stage with a toolbar (settings toggle, play/pause, reset, mirror, guide line, fullscreen, help). On mobile the sidebar stacks above the stage
+- **Settings Toggle**: Hide the sidebar to give the stage the full width; it hides automatically when playback starts
+- **Accessible Controls**: Labelled inputs, icon buttons with `aria-label`s, toggle state via `aria-pressed`, visible focus rings, dialogs that close with Escape
+- **Responsive Layout**: Works on desktop, tablet, and mobile devices; fullscreen falls back to a full-window view where the Fullscreen API is unavailable (e.g. iPhone Safari)
 - **Keyboard Shortcuts**: 
   - Spacebar: Play/Pause
-  - Escape: Close help/info overlay
-- **Mouse Wheel Control**: Manual scrolling when paused
+  - Escape: Close the help or custom-scripts dialog
+- **Mouse Wheel / Touch Drag**: Manual scrolling when paused
+- **Slider Wheel Control**: Mouse wheel over the speed or font-size slider adjusts it
 
 ### Additional Features
 - **Help System**: Built-in guide explaining all controls
@@ -49,7 +55,7 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 ## Usage
 
 1. Open `/tele/` in your browser
-2. Select a script from the dropdown menu
+2. Select a script from the dropdown menu (or add your own with **Manage custom scripts**)
 3. Adjust font size and speed to your preference
 4. Customize background and text colors if desired
 5. Click Record to start voice recording (optional)
@@ -60,7 +66,7 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 ## Keyboard Shortcuts
 
 - **Spacebar**: Toggle Play/Pause
-- **Escape**: Close help overlay
+- **Escape**: Close the help or custom-scripts dialog
 
 ## Tips
 
@@ -72,11 +78,13 @@ A professional teleprompter application with 10 pre-loaded scripts and advanced 
 - Record your voice to review your delivery later
 - Customize colors for better contrast based on your environment
 - Background and text color preferences are saved automatically
+- Hide the settings panel (sliders icon) for a larger stage
 
 ## Technical Details
 
 - Pure HTML, CSS, and JavaScript
-- No external dependencies
+- No external libraries; uses the site's shared `/assets/tools.css` and `/assets/tools.js`
+- Stored in localStorage: `teleprompterCustomScripts`, `teleprompterBgColor`, `teleprompterTextColor`, and the site-wide `theme`
 - Works offline after initial load
 - Optimized for performance
 - Mobile-friendly responsive design
