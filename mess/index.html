@@ -549,7 +549,7 @@
         </main>
         
         <footer>
-            <p>&copy; 2025 Shakil Hosen | Built with ❤️ and hosted on GitHub Pages</p>
+            <p>&copy; <span data-year>2026</span> Shakil Hosen | Built with ❤️ and hosted on GitHub Pages</p>
         </footer>
     </div>
 
@@ -856,5 +856,6 @@
             resultSection.style.display = 'block';
         }
     </script>
+<script>document.querySelectorAll("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });</script>
 </body>
 </html>

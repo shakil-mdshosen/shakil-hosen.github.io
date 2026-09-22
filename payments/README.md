@@ -114,4 +114,4 @@ For technical issues:
 
 ## License
 
-© 2025 Shakil Hosen
+© 2026 Shakil Hosen
