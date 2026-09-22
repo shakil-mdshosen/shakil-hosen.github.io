@@ -3,739 +3,602 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Primary SEO Meta Tags -->
     <title>Teleprompter | Shakil Hosen</title>
     <meta name="title" content="Teleprompter | Shakil Hosen">
     <meta name="description" content="Professional teleprompter with multiple scripts and advanced features">
     <meta name="author" content="Shakil Hosen">
     <meta name="robots" content="index, follow">
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href="https://shakil.engineer/tele/">
-    
+
     <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="alternate icon" href="../favicon.ico">
-    
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+
+    <!-- Shared design system -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="/assets/tools.css">
+    <script>(function(){var s;try{s=localStorage.getItem("theme")}catch(e){}var l=window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches;document.documentElement.setAttribute("data-theme",s==="light"||s==="dark"?s:(l?"light":"dark"))})();</script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ---------- Icons ---------- */
+        .i { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .i-fill { fill: currentColor; }
+
+        /* ---------- Page layout ---------- */
+        .tp-hero { padding-bottom: clamp(16px, 2.4vw, 24px); }
+        /* Let dialogs stack above the sticky site header */
+        main.tp-page, main.tp-page > .wrap { z-index: auto; }
+        .tp-hero .lede { margin-top: 8px; }
+
+        .tp-app {
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
         }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
-            overflow: hidden;
+        .tp-app.settings-collapsed { grid-template-columns: minmax(0, 1fr); }
+        .controls-header.collapsed { display: none; }
+
+        /* ---------- Settings sidebar ---------- */
+        .tp-side { padding: 18px; position: sticky; top: 78px; }
+        .tp-side + .tp-main { margin-top: 0; }
+        .tp-section + .tp-section {
+            margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line);
         }
-        
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+        .tp-section-head {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
         }
-        
-        /* Header Controls */
-        .controls-header {
-            background: #2c2c2c;
-            padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            z-index: 1000;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-            max-height: 500px;
-            overflow: hidden;
+        .tp-section-head .i { width: 15px; height: 15px; color: var(--accent); }
+        .tp-section-head h2 {
+            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.13em; text-transform: uppercase; color: var(--text-3);
         }
-        
-        .controls-header.collapsed {
-            max-height: 0;
-            padding: 0 20px;
+        .tp-section .btn-block { margin-top: 10px; }
+
+        .range-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .range-value {
+            font-family: var(--font-mono); font-size: 0.78rem; font-weight: 500;
+            color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent-line);
+            padding: 1px 8px; border-radius: 999px; min-width: 44px; text-align: center;
+            font-variant-numeric: tabular-nums;
         }
-        
-        /* Toggle Button */
-        .settings-toggle {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1001;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
+        #speedValue::after { content: "x"; }
+        .range-scale { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-3); margin-top: -2px; }
+        .field input[type="range"] { margin: 4px 0 0; height: 22px; cursor: pointer; }
+
+        .color-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        .color-field {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--bg-inset); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            padding: 6px 6px 6px 8px;
         }
-        
-        .settings-toggle:hover {
-            background: #0056b3;
-            transform: scale(1.1);
+        .color-field label { font-size: 0.82rem; font-weight: 600; color: var(--text); flex: 1; min-width: 0; }
+        .color-field input[type="color"] {
+            -webkit-appearance: none; appearance: none;
+            width: 30px; height: 30px; padding: 0; border: 1px solid var(--line-strong);
+            border-radius: 8px; background: none; cursor: pointer; flex: none;
         }
-        
-        .settings-toggle.active {
-            background: #28a745;
+        .color-field input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-field input[type="color"]::-webkit-color-swatch { border: 0; border-radius: 7px; }
+        .color-field input[type="color"]::-moz-color-swatch { border: 0; border-radius: 7px; }
+        .color-field .icon-btn { width: 30px; height: 30px; border-radius: 8px; }
+        .color-field .icon-btn svg { width: 14px; height: 14px; }
+
+        #recordBtn.recording {
+            background: var(--danger); color: #fff; border-color: var(--danger);
         }
-        
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .control-group label {
-            color: #aaa;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        
-        select, button, input[type="range"] {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            touch-action: manipulation;
-        }
-        
-        select {
-            background: #3a3a3a;
-            color: #fff;
-            min-width: 200px;
-        }
-        
-        select:hover {
-            background: #4a4a4a;
-        }
-        
-        button {
-            background: #007bff;
-            color: white;
-            font-weight: 500;
-            min-width: 80px;
-        }
-        
-        button:hover {
-            background: #0056b3;
-        }
-        
-        button.active {
-            background: #28a745;
-        }
-        
-        button.danger {
-            background: #dc3545;
-        }
-        
-        button.danger:hover {
-            background: #c82333;
-        }
-        
-        input[type="range"] {
-            width: 150px;
-            cursor: pointer;
-        }
-        
-        input[type="color"] {
-            width: 50px;
-            height: 35px;
-            padding: 2px;
-            border: 2px solid #3a3a3a;
-            border-radius: 5px;
-            cursor: pointer;
-            background: #3a3a3a;
-            touch-action: manipulation;
-        }
-        
-        input[type="color"]:hover {
-            border-color: #007bff;
-        }
-        
         #recordingStatus {
-            color: #dc3545;
-            font-weight: bold;
-            font-size: 0.9rem;
-            animation: pulse 1.5s infinite;
+            display: none; align-items: center; gap: 8px; margin-top: 10px;
+            font-size: 0.82rem; font-weight: 600; color: var(--danger);
         }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        #recordingStatus:not(:empty) { display: flex; }
+        #recordingStatus::before {
+            content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--danger);
+            animation: pulse 1.2s infinite;
         }
-        
-        button.recording {
-            background: #dc3545;
-            animation: recording-pulse 1s infinite;
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* ---------- Toolbar ---------- */
+        .tp-main { min-width: 0; scroll-margin-top: 74px; }
+        .tp-toolbar {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            padding: 8px; margin-bottom: 12px;
+            background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: opacity .25s var(--ease);
         }
-        
-        @keyframes recording-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .tp-toolbar .spacer { flex: 1; }
+        .tp-toolbar .divider { width: 1px; height: 24px; background: var(--line); margin: 0 4px; }
+        .tool {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 38px; padding: 0 12px; border-radius: 10px;
+            border: 1px solid transparent; background: transparent; color: var(--text-2);
+            font-family: var(--font-display); font-size: 0.86rem; font-weight: 600; white-space: nowrap;
+            cursor: pointer;
+            transition: color .18s var(--ease), background .18s var(--ease), border-color .18s var(--ease);
         }
-        
-        /* Teleprompter Display */
+        .tool:hover { color: var(--text); background: var(--bg-3); }
+        .tool.active, .tool[aria-pressed="true"], .tool[aria-expanded="true"] {
+            color: var(--accent); background: var(--accent-soft); border-color: var(--accent-line);
+        }
+        .tool.icon-only { width: 38px; padding: 0; justify-content: center; }
+        #playPauseBtn { min-width: 108px; justify-content: center; height: 38px; padding: 0 16px; }
+        #playPauseBtn.active { background: var(--bg-3); color: var(--text); box-shadow: none; border-color: var(--line-strong); }
+
+        /* ---------- Stage ---------- */
         .teleprompter-display {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            background: #000;
+            position: relative; overflow: hidden;
+            height: clamp(360px, calc(100svh - 170px), 980px);
+            background: #000; color: #fff;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--line-strong);
+            box-shadow: var(--shadow);
+            touch-action: none;
+            cursor: ns-resize;
         }
-        
+        .tp-viewport {
+            position: absolute; inset: 0; overflow: hidden;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 64px, #000 calc(100% - 56px), transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 64px, #000 calc(100% - 56px), transparent 100%);
+        }
         .teleprompter-content {
-            position: absolute;
-            width: 100%;
-            padding: 50px;
-            text-align: center;
-            line-height: 2;
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding: 96px clamp(20px, 6%, 72px) 40vh;
+            text-align: center; line-height: 1.9;
+            font-size: 32px; font-weight: 500; letter-spacing: 0.005em;
+            color: #fff;
             transition: top 0.1s linear;
         }
-        
-        .teleprompter-content.mirrored {
-            transform: scaleX(-1);
-        }
-        
-        /* Progress Bar */
-        .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: #007bff;
-            width: 0%;
-            transition: width 0.1s linear;
-            z-index: 100;
-        }
-        
-        /* Center Line */
-        .center-line {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.2);
-            pointer-events: none;
-            display: none;
-        }
-        
-        .center-line.active {
-            display: block;
-        }
-        
-        /* Speed Indicator */
-        .speed-indicator {
-            position: absolute;
-            top: 70px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            z-index: 100;
-        }
-        
-        /* Timer Display */
-        .timer-display {
-            position: absolute;
-            top: 70px;
-            left: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            z-index: 100;
-            line-height: 1.5;
-        }
-        
-        .timer-display .timer-label {
-            color: #007bff;
-            font-weight: bold;
-            font-size: 0.8rem;
-            margin-bottom: 3px;
-        }
-        
-        .timer-display .timer-value {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-        }
-        
-        /* Info Overlay */
-        .info-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 200;
-            display: none;
-            max-height: 90vh;
-            max-width: 90vw;
-            overflow-y: auto;
-        }
-        
-        .info-overlay.active {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .info-overlay h2 {
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-        
-        .info-overlay ul {
-            text-align: left;
-            margin: 20px 0;
-            list-style-position: inside;
-        }
-        
-        .info-overlay li {
-            margin: 10px 0;
-        }
-        
-        /* Breadcrumb */
-        .breadcrumb {
-            color: #aaa;
-            font-size: 0.85rem;
-            flex-basis: 100%;
-        }
-        
-        .breadcrumb a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Fullscreen Mode */
-        .fullscreen .controls-header {
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .fullscreen:hover .controls-header {
-            opacity: 1;
-        }
-        
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            .controls-header {
-                padding: 10px;
-                gap: 10px;
-                max-height: 70vh;
-                overflow-y: auto;
-            }
-            
-            .control-group {
-                flex-basis: 100%;
-                justify-content: space-between;
-            }
-            
-            .control-group label {
-                font-size: 1rem;
-                min-width: 100px;
-            }
-            
-            select {
-                min-width: 100%;
-                font-size: 1rem;
-                padding: 12px 15px;
-            }
-            
-            button {
-                padding: 12px 20px;
-                font-size: 1rem;
-                min-width: 100px;
-            }
-            
-            .settings-toggle {
-                width: 60px;
-                height: 60px;
-                font-size: 2rem;
-                top: 15px;
-                right: 15px;
-            }
-            
-            .teleprompter-content {
-                padding: 20px;
-            }
-            
-            input[type="range"] {
-                width: 100%;
-                min-height: 40px;
-            }
-            
-            input[type="color"] {
-                width: 60px;
-                height: 45px;
-            }
-            
-            .speed-indicator {
-                top: 80px;
-                right: 10px;
-                font-size: 1rem;
-                padding: 12px 18px;
-            }
-            
-            .timer-display {
-                top: 80px;
-                left: 10px;
-                font-size: 0.8rem;
-                padding: 8px 12px;
-            }
-            
-            .timer-display .timer-value {
-                font-size: 0.9rem;
-            }
-            
-            .breadcrumb {
-                width: 100%;
-                font-size: 1rem;
-                padding-bottom: 10px;
-                border-bottom: 1px solid #444;
-            }
-            
-            .info-overlay {
-                max-height: 80vh;
-                max-width: 95vw;
-                padding: 20px;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .info-overlay ul {
-                flex: 1;
-            }
-            
-            .info-overlay button {
-                margin-top: 15px;
-                flex-shrink: 0;
-            }
-        }
-        
-        @media screen and (max-width: 480px) {
-            .controls-header {
-                padding: 8px;
-                gap: 8px;
-                font-size: 0.9rem;
-            }
-            
-            .control-group {
-                gap: 8px;
-            }
-            
-            .control-group label {
-                font-size: 0.95rem;
-                min-width: 80px;
-            }
-            
-            select, button {
-                padding: 10px 15px;
-                font-size: 0.95rem;
-            }
-            
-            .settings-toggle {
-                width: 55px;
-                height: 55px;
-                font-size: 1.8rem;
-            }
-            
-            input[type="color"] {
-                width: 55px;
-                height: 40px;
-            }
-            
-            .modal {
-                width: 95%;
-                padding: 20px;
-            }
-            
-            .modal h2 {
-                font-size: 1.3rem;
-            }
-            
-            .info-overlay {
-                max-height: 75vh;
-                padding: 15px;
-            }
-            
-            .info-overlay h2 {
-                font-size: 1.2rem;
-                margin-bottom: 15px;
-            }
-            
-            .info-overlay ul {
-                font-size: 0.9rem;
-            }
-            
-            .info-overlay li {
-                margin: 8px 0;
-            }
-        }
-        
-        /* Script Content Styles */
+        .teleprompter-content.mirrored { transform: scaleX(-1); }
+        #scriptContent { max-width: 30em; margin: 0 auto; overflow-wrap: anywhere; }
+
         .script-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 30px;
-            color: #007bff;
+            font-family: var(--font-display); font-size: 1.4em; font-weight: 700; line-height: 1.25;
+            letter-spacing: -0.015em; margin-bottom: 1em; color: #22D3EE;
         }
-        
-        .script-section {
-            margin-bottom: 40px;
-        }
-        
+        .script-section { margin: 1.3em 0; }
         .script-section h3 {
-            color: #28a745;
-            margin-bottom: 20px;
+            font-family: var(--font-mono); font-size: 0.55em; font-weight: 500; line-height: 1.4;
+            letter-spacing: 0.14em; text-transform: uppercase; color: #34D399;
+            margin: 0 0 0.6em; text-wrap: balance;
         }
-        
-        /* Custom Script Modal */
+
+        .center-line {
+            position: absolute; top: 50%; left: 0; right: 0; height: 2px; margin-top: -1px;
+            background: linear-gradient(90deg, #22D3EE 0 18px, rgba(255,255,255,0.22) 18px calc(100% - 18px), #22D3EE calc(100% - 18px));
+            pointer-events: none; display: none; z-index: 5;
+        }
+        .center-line.active { display: block; }
+        .center-line::before, .center-line::after {
+            content: ""; position: absolute; top: 50%; width: 0; height: 0;
+            border: 7px solid transparent; transform: translateY(-50%);
+        }
+        .center-line::before { left: 0; border-left-color: #22D3EE; }
+        .center-line::after { right: 0; border-right-color: #22D3EE; }
+
+        .progress-bar {
+            position: absolute; bottom: 0; left: 0; height: 4px; width: 0%;
+            background: #22D3EE; box-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+            transition: width 0.1s linear; z-index: 10;
+        }
+        .progress-track {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+            background: rgba(255,255,255,0.08); z-index: 9;
+        }
+
+        .stage-chip {
+            position: absolute; top: 14px; z-index: 10;
+            background: rgba(8, 12, 20, 0.62); color: #E8EDF6;
+            border: 1px solid rgba(255,255,255,0.12);
+            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+            border-radius: 12px; padding: 8px 12px;
+            font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.35;
+            font-variant-numeric: tabular-nums; pointer-events: none;
+        }
+        .speed-indicator { right: 14px; display: flex; align-items: center; gap: 8px; }
+        .speed-indicator::before {
+            content: "Speed"; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: #22D3EE;
+        }
+        .timer-display { left: 14px; display: grid; grid-template-columns: auto auto; column-gap: 10px; align-items: baseline; }
+        .timer-display .timer-label {
+            font-size: 0.66rem; letter-spacing: 0.14em; color: #22D3EE; grid-row: span 2; align-self: center;
+        }
+        .timer-display .timer-value { font-size: 0.95rem; color: #fff; }
+        .timer-display #estimatedTime { font-size: 0.72rem; color: #9AA7BE; }
+
+        .stage-hint {
+            display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center;
+            margin-top: 12px; font-size: 0.8rem; color: var(--text-3);
+        }
+        .stage-hint span { display: inline-flex; align-items: center; gap: 6px; }
+
+        /* ---------- Fullscreen ---------- */
+        .tp-app.fullscreen {
+            background: var(--bg); padding: 16px; height: 100vh; height: 100dvh;
+            display: flex; gap: 16px; align-items: stretch; overflow: hidden;
+        }
+        .tp-app.fullscreen.pseudo-fs { position: fixed; inset: 0; z-index: 500; width: 100%; max-width: none; }
+        .tp-app.fullscreen .tp-side { position: static; width: 300px; flex: none; overflow-y: auto; }
+        .tp-app.fullscreen .tp-main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+        .tp-app.fullscreen .teleprompter-display { flex: 1; height: auto; min-height: 0; }
+        .tp-app.fullscreen .stage-hint { display: none; }
+        .tp-app.fullscreen.is-playing .tp-toolbar { opacity: 0.12; }
+        .tp-app.fullscreen.is-playing .tp-toolbar:hover,
+        .tp-app.fullscreen.is-playing .tp-toolbar:focus-within { opacity: 1; }
+
+        /* ---------- Modals ---------- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            position: fixed; inset: 0; z-index: 600;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+            background: rgba(3, 6, 12, 0.62);
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
         }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
+        .modal-overlay.active { display: flex; animation: fade-in .18s var(--ease); }
+        @keyframes fade-in { from { opacity: 0; } }
         .modal {
-            background: #2c2c2c;
-            border-radius: 10px;
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            width: 100%; max-width: 620px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px);
+            overflow-y: auto; overscroll-behavior: contain;
+            animation: pop-in .22s var(--ease);
         }
-        
-        .modal h2 {
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-        
-        .modal-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .modal-form label {
-            color: #aaa;
-            font-size: 0.9rem;
-        }
-        
-        .modal-form input,
-        .modal-form textarea {
-            padding: 10px;
-            border: 2px solid #3a3a3a;
-            border-radius: 5px;
-            background: #1a1a1a;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 1rem;
-        }
-        
-        .modal-form textarea {
-            min-height: 200px;
-            resize: vertical;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .modal-buttons button {
-            flex: 1;
-        }
-        
-        .custom-scripts-list {
-            margin-top: 20px;
-        }
-        
+        @keyframes pop-in { from { transform: translateY(8px) scale(.985); opacity: 0; } }
+        .modal-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .modal-head h2 { font-size: 1.2rem; font-weight: 600; flex: 1; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+        .modal-buttons .btn { flex: 1 1 140px; }
+        .form-mode { font-size: 0.8rem; color: var(--text-3); margin: 0 0 12px; }
+        .form-mode strong { color: var(--accent); font-weight: 600; }
+
+        .custom-scripts-list { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+        .custom-scripts-list > .tp-section-head { margin-bottom: 12px; }
         .custom-script-item {
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            background: var(--bg-inset); border: 1px solid var(--line); border-radius: var(--radius-sm);
+            padding: 10px 10px 10px 14px;
         }
-        
-        .custom-script-item h3 {
-            color: #fff;
-            margin: 0;
-            font-size: 1rem;
+        .custom-script-item + .custom-script-item { margin-top: 8px; }
+        .custom-script-item.editing { border-color: var(--accent-line); background: var(--accent-soft); }
+        .custom-script-item h3 { font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; letter-spacing: 0; overflow-wrap: anywhere; }
+        .custom-script-item .meta { font-size: 0.76rem; color: var(--text-3); margin-top: 2px; }
+        .custom-script-actions { display: flex; gap: 6px; flex: none; }
+        .custom-script-actions .btn { padding: 6px 10px; }
+        .empty-state {
+            text-align: center; color: var(--text-3); font-size: 0.88rem;
+            padding: 20px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm);
         }
-        
-        .custom-script-actions {
-            display: flex;
-            gap: 10px;
+
+        .help-list { display: grid; column-gap: 24px; margin: 0; padding: 0; list-style: none; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+        .modal.modal-wide { max-width: 780px; }
+        .help-list li {
+            display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start;
+            padding: 10px 0; border-bottom: 1px solid var(--line);
         }
-        
-        .custom-script-actions button {
-            padding: 5px 10px;
-            font-size: 0.85rem;
-            min-width: 60px;
+        .shortcuts li span:first-child { color: var(--text); }
+        .help-list .ico-badge { width: 32px; height: 32px; }
+        .help-list strong { display: block; font-weight: 600; font-size: 0.92rem; }
+        .help-list li > span:last-child > span { display: block; color: var(--text-2); font-size: 0.88rem; }
+        .help-sub { margin: 20px 0 10px; }
+        .shortcuts { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+        .shortcuts li { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; font-size: 0.88rem; color: var(--text-2); }
+        .shortcuts li span:first-child { white-space: nowrap; }
+        .help-foot { margin-top: 20px; display: flex; justify-content: flex-end; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 900px) {
+            .tp-app { grid-template-columns: minmax(0, 1fr); }
+            .tp-side { position: static; }
+            .tp-app.fullscreen { flex-direction: column; overflow-y: auto; }
+            .tp-app.fullscreen .tp-side { width: auto; max-height: 45vh; }
+        }
+        @media (max-width: 720px) {
+            .tool .tool-label { display: none; }
+            .tool { width: 38px; padding: 0; justify-content: center; }
+            #playPauseBtn { width: auto; }
+            #playPauseBtn .tool-label { display: inline; }
+            .tp-toolbar .divider { display: none; }
+            .tp-toolbar { gap: 4px; flex-wrap: nowrap; padding: 6px; }
+            .tool { width: 36px; height: 36px; }
+            #playPauseBtn { min-width: 0; padding: 0 14px; height: 36px; }
+        }
+        @media (max-width: 640px) {
+            .teleprompter-display { height: clamp(340px, calc(100svh - 150px), 720px); }
+            .teleprompter-content { padding: 84px 18px 40vh; }
+            .stage-chip { top: 10px; padding: 6px 10px; font-size: 0.76rem; }
+            .speed-indicator { right: 10px; }
+            .timer-display { left: 10px; }
+            .tp-app.fullscreen { padding: 10px; gap: 10px; }
+        }
+        @media (max-width: 360px) {
+            #playPauseBtn .tool-label { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <!-- Settings Toggle Button -->
-        <button class="settings-toggle" id="settingsToggle" aria-label="Toggle Settings">⚙</button>
-        
-        <div class="controls-header" id="controlsHeader">
-            <div class="breadcrumb">
-                <a href="../">Home</a> / Teleprompter
-            </div>
-            
-            <div class="control-group">
-                <label for="scriptSelect">Script:</label>
-                <select id="scriptSelect">
-                    <option value="0">Welcome Speech</option>
-                    <option value="1">Product Presentation</option>
-                    <option value="2">News Broadcast</option>
-                    <option value="3">Educational Lecture</option>
-                    <option value="4">Interview Questions</option>
-                    <option value="5">Motivational Speech</option>
-                    <option value="6">Technical Presentation</option>
-                    <option value="7">Event Hosting</option>
-                    <option value="8">YouTube Video Script</option>
-                    <option value="9">Public Announcement</option>
-                </select>
-                <button id="manageScriptsBtn" aria-label="Manage Custom Scripts">📝 Manage Scripts</button>
-            </div>
-            
-            <div class="control-group">
-                <button id="playPauseBtn" aria-label="Play">▶ Play</button>
-                <button id="resetBtn" aria-label="Reset">⟲ Reset</button>
-                <button id="mirrorBtn" aria-label="Mirror">⇄ Mirror</button>
-                <button id="centerLineBtn" aria-label="Center Line">━ Center Line</button>
-                <button id="fullscreenBtn" aria-label="Fullscreen">⛶ Fullscreen</button>
-            </div>
-            
-            <div class="control-group">
-                <label for="speedRange">Speed:</label>
-                <input type="range" id="speedRange" min="1" max="10" value="3" step="1" aria-label="Speed control">
-                <span id="speedValue">3</span>
-            </div>
-            
-            <div class="control-group">
-                <label for="fontSizeRange">Font Size:</label>
-                <input type="range" id="fontSizeRange" min="16" max="72" value="32" step="2" aria-label="Font size control">
-                <span id="fontSizeValue">32px</span>
-            </div>
-            
-            <div class="control-group">
-                <button id="recordBtn" aria-label="Record Voice">🎤 Record</button>
-                <span id="recordingStatus"></span>
-            </div>
-            
-            <div class="control-group">
-                <label for="bgColorPicker">Background:</label>
-                <input type="color" id="bgColorPicker" value="#000000" aria-label="Background color">
-                <button id="resetBgColorBtn" aria-label="Reset Background Color">↺</button>
-                <label for="textColorPicker">Text:</label>
-                <input type="color" id="textColorPicker" value="#ffffff" aria-label="Text color">
-                <button id="resetTextColorBtn" aria-label="Reset Text Color">↺</button>
-            </div>
-            
-            <div class="control-group">
-                <button id="infoBtn" aria-label="Help">ℹ Help</button>
-            </div>
+    <!-- Icon sprite -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.8v14.4a.8.8 0 0 0 1.2.7l11.3-7.2a.8.8 0 0 0 0-1.4L8.2 4.1A.8.8 0 0 0 7 4.8z"/></symbol>
+        <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></symbol>
+        <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8.2"/><path d="M3 3.5v4.7h4.7"/></symbol>
+        <symbol id="i-mirror" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8.5 7 3 17h5.5z"/><path d="M15.5 7 21 17h-5.5z"/></symbol>
+        <symbol id="i-guide" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M6 6.5h12M8 17.5h8"/></symbol>
+        <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+        <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></symbol>
+        <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+        <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a2.9 2.9 0 0 1 5.6 1c0 1.9-2.8 2.7-2.8 2.7"/><path d="M12 17h.01"/></symbol>
+        <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M19 10.5v.5a7 7 0 0 1-14 0v-.5M12 18v3.5M8.5 21.5h7"/></symbol>
+        <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2.5H6.5a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><path d="M14 2.5V8h5.5M8.5 13h7M8.5 17h5"/></symbol>
+        <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+        <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6M18.5 6l-.9 13.1a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9L5.5 6"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+        <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M12 14l4-4"/><path d="M3.3 17a10 10 0 1 1 17.4 0"/></symbol>
+        <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 21.5a9.5 9.5 0 1 1 9.5-9.5c0 2.6-2.1 4-4.2 4H15a2 2 0 0 0-1.5 3.3 1.3 1.3 0 0 1-1 2.2z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="7.5" r="1"/></symbol>
+        <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/></symbol>
+        <symbol id="i-play-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.5v7l5.5-3.5z"/></symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+        <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M10 13h4M7 16h10"/></symbol>
+        <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="6"/><path d="M12 6.5v4"/></symbol>
+    </svg>
+
+    <header class="site-header">
+        <div class="wrap wrap-wide nav">
+            <a class="brand" href="/" aria-label="Shakil Hosen, home">
+                <span class="brand-mark" aria-hidden="true">S</span>
+                <span class="brand-name">Shakil Hosen</span>
+                <span class="brand-sep" aria-hidden="true">/</span>
+                <span class="brand-tool">Teleprompter</span>
+            </a>
+            <nav class="nav-links" aria-label="Tool navigation">
+                <a href="/#tools" class="hide-sm">All tools</a>
+            </nav>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between dark and light theme">
+                <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            </button>
         </div>
-        
-        <div class="teleprompter-display" id="display">
-            <div class="teleprompter-content" id="content">
-                <div id="scriptContent"></div>
-            </div>
-            <div class="center-line" id="centerLine"></div>
-            <div class="progress-bar" id="progressBar"></div>
-            <div class="speed-indicator" id="speedIndicator">Speed: 3x</div>
-            <div class="timer-display" id="timerDisplay">
-                <div class="timer-label">ELAPSED</div>
-                <div class="timer-value" id="timerValue">00:00</div>
-                <div class="timer-value" id="estimatedTime">Est: --:--</div>
-            </div>
-        </div>
-        
-        <div class="info-overlay" id="infoOverlay">
-            <h2>Teleprompter Controls</h2>
-            <ul>
-                <li><strong>Play/Pause:</strong> Start or stop auto-scrolling</li>
-                <li><strong>Reset:</strong> Return to the beginning of the script</li>
-                <li><strong>Mirror:</strong> Flip text horizontally (useful for teleprompter mirrors)</li>
-                <li><strong>Center Line:</strong> Show/hide reading guide line</li>
-                <li><strong>Fullscreen:</strong> Enter/exit fullscreen mode</li>
-                <li><strong>Speed:</strong> Adjust scrolling speed (1-10)</li>
-                <li><strong>Font Size:</strong> Adjust text size (16-72px)</li>
-                <li><strong>Record:</strong> Start/stop voice recording (auto-downloads when stopped)</li>
-                <li><strong>Background/Text Colors:</strong> Customize display colors</li>
-                <li><strong>Scroll Wheel:</strong> Manual scrolling control</li>
-                <li><strong>Spacebar:</strong> Quick play/pause</li>
-                <li><strong>Settings Toggle:</strong> Click the gear icon to show/hide settings</li>
-            </ul>
-            <button id="closeInfoBtn" class="danger">Close</button>
-        </div>
-        
-        <!-- Custom Script Management Modal -->
-        <div class="modal-overlay" id="scriptModal">
-            <div class="modal">
-                <h2>Manage Custom Scripts</h2>
-                <div class="modal-form">
-                    <label for="scriptTitle">Script Title:</label>
-                    <input type="text" id="scriptTitle" placeholder="Enter script title">
-                    
-                    <label for="scriptContentInput">Script Content:</label>
-                    <textarea id="scriptContentInput" placeholder="Enter your script content here..."></textarea>
-                    
-                    <div class="modal-buttons">
-                        <button id="saveScriptBtn">Save Script</button>
-                        <button id="cancelScriptBtn" class="danger">Cancel</button>
+    </header>
+
+    <main class="tp-page">
+        <section class="page-hero tp-hero"><div class="wrap wrap-wide">
+            <span class="eyebrow"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg>Tool</span>
+            <h1>Tele<span class="accent">prompter</span></h1>
+            <p class="lede">Smooth auto-scrolling scripts with speed, mirror and font controls, custom scripts saved in your browser, and optional voice recording.</p>
+        </div></section>
+
+        <div class="wrap wrap-wide">
+            <div class="tp-app" id="app">
+                <!-- Settings sidebar -->
+                <aside class="panel tp-side controls-header" id="controlsHeader" aria-label="Teleprompter settings">
+                    <section class="tp-section">
+                        <div class="tp-section-head">
+                            <svg class="i" aria-hidden="true"><use href="#i-file"/></svg>
+                            <h2>Script</h2>
+                        </div>
+                        <div class="field">
+                            <label class="sr-only" for="scriptSelect">Script</label>
+                            <select id="scriptSelect" class="select">
+                                <option value="0">Welcome Speech</option>
+                                <option value="1">Product Presentation</option>
+                                <option value="2">News Broadcast</option>
+                                <option value="3">Educational Lecture</option>
+                                <option value="4">Interview Questions</option>
+                                <option value="5">Motivational Speech</option>
+                                <option value="6">Technical Presentation</option>
+                                <option value="7">Event Hosting</option>
+                                <option value="8">YouTube Video Script</option>
+                                <option value="9">Public Announcement</option>
+                            </select>
+                        </div>
+                        <button id="manageScriptsBtn" class="btn btn-ghost btn-block" type="button">
+                            <svg class="i" aria-hidden="true"><use href="#i-edit"/></svg>Manage custom scripts
+                        </button>
+                    </section>
+
+                    <section class="tp-section">
+                        <div class="tp-section-head">
+                            <svg class="i" aria-hidden="true"><use href="#i-gauge"/></svg>
+                            <h2>Playback</h2>
+                        </div>
+                        <div class="field">
+                            <div class="range-row">
+                                <label class="label" for="speedRange">Speed</label>
+                                <span class="range-value" id="speedValue">3</span>
+                            </div>
+                            <input type="range" id="speedRange" min="1" max="10" value="3" step="1">
+                            <div class="range-scale" aria-hidden="true"><span>Slow</span><span>Fast</span></div>
+                        </div>
+                        <div class="field">
+                            <div class="range-row">
+                                <label class="label" for="fontSizeRange">Font size</label>
+                                <span class="range-value" id="fontSizeValue">32px</span>
+                            </div>
+                            <input type="range" id="fontSizeRange" min="16" max="72" value="32" step="2">
+                            <div class="range-scale" aria-hidden="true"><span>16px</span><span>72px</span></div>
+                        </div>
+                    </section>
+
+                    <section class="tp-section">
+                        <div class="tp-section-head">
+                            <svg class="i" aria-hidden="true"><use href="#i-palette"/></svg>
+                            <h2>Stage colours</h2>
+                        </div>
+                        <div class="color-grid">
+                            <div class="color-field">
+                                <input type="color" id="bgColorPicker" value="#000000">
+                                <label for="bgColorPicker">Background</label>
+                                <button type="button" class="icon-btn" id="resetBgColorBtn" aria-label="Reset background color" title="Reset to black">
+                                    <svg class="i" aria-hidden="true"><use href="#i-undo"/></svg>
+                                </button>
+                            </div>
+                            <div class="color-field">
+                                <input type="color" id="textColorPicker" value="#ffffff">
+                                <label for="textColorPicker">Text</label>
+                                <button type="button" class="icon-btn" id="resetTextColorBtn" aria-label="Reset text color" title="Reset to white">
+                                    <svg class="i" aria-hidden="true"><use href="#i-undo"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="tp-section">
+                        <div class="tp-section-head">
+                            <svg class="i" aria-hidden="true"><use href="#i-mic"/></svg>
+                            <h2>Voice recording</h2>
+                        </div>
+                        <button id="recordBtn" class="btn btn-ghost btn-block" type="button">
+                            <svg class="i" aria-hidden="true"><use href="#i-mic"/></svg><span class="btn-label">Start recording</span>
+                        </button>
+                        <span id="recordingStatus" role="status" aria-live="polite"></span>
+                        <p class="hint" style="margin-top:8px">Saved as a .webm file when you stop.</p>
+                    </section>
+                </aside>
+
+                <!-- Stage -->
+                <div class="tp-main">
+                    <div class="tp-toolbar" role="toolbar" aria-label="Teleprompter controls">
+                        <button type="button" class="tool icon-only" id="settingsToggle" aria-label="Toggle settings panel" aria-controls="controlsHeader" aria-expanded="true" title="Settings">
+                            <svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>
+                        </button>
+                        <span class="divider" aria-hidden="true"></span>
+                        <button type="button" class="btn btn-primary" id="playPauseBtn" aria-label="Play">
+                            <svg class="i i-fill" aria-hidden="true"><use href="#i-play"/></svg><span class="tool-label">Play</span>
+                        </button>
+                        <button type="button" class="tool" id="resetBtn" aria-label="Reset to start" title="Reset to start">
+                            <svg class="i" aria-hidden="true"><use href="#i-reset"/></svg><span class="tool-label">Reset</span>
+                        </button>
+                        <span class="divider" aria-hidden="true"></span>
+                        <button type="button" class="tool" id="mirrorBtn" aria-label="Mirror text" aria-pressed="false" title="Mirror text">
+                            <svg class="i" aria-hidden="true"><use href="#i-mirror"/></svg><span class="tool-label">Mirror</span>
+                        </button>
+                        <button type="button" class="tool" id="centerLineBtn" aria-label="Show reading guide line" aria-pressed="false" title="Reading guide line">
+                            <svg class="i" aria-hidden="true"><use href="#i-guide"/></svg><span class="tool-label">Guide</span>
+                        </button>
+                        <span class="spacer"></span>
+                        <button type="button" class="tool" id="fullscreenBtn" aria-label="Enter fullscreen" title="Fullscreen">
+                            <svg class="i" aria-hidden="true"><use href="#i-maximize"/></svg><span class="tool-label">Fullscreen</span>
+                        </button>
+                        <button type="button" class="tool icon-only" id="infoBtn" aria-label="Help and shortcuts" title="Help">
+                            <svg class="i" aria-hidden="true"><use href="#i-help"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="teleprompter-display" id="display" aria-label="Teleprompter stage">
+                        <div class="tp-viewport">
+                            <div class="teleprompter-content" id="content" aria-live="off">
+                                <div id="scriptContent"></div>
+                            </div>
+                        </div>
+                        <div class="center-line" id="centerLine" aria-hidden="true"></div>
+                        <div class="progress-track" aria-hidden="true"></div>
+                        <div class="progress-bar" id="progressBar" aria-hidden="true"></div>
+                        <div class="stage-chip speed-indicator" id="speedIndicator">3x</div>
+                        <div class="stage-chip timer-display" id="timerDisplay">
+                            <div class="timer-label">ELAPSED</div>
+                            <div class="timer-value" id="timerValue">00:00</div>
+                            <div class="timer-value" id="estimatedTime">Est: --:--</div>
+                        </div>
+                    </div>
+
+                    <div class="stage-hint">
+                        <span><kbd>Space</kbd> play / pause</span>
+                        <span><svg class="i" aria-hidden="true" style="width:14px;height:14px"><use href="#i-mouse"/></svg>Scroll or drag the stage to move when paused</span>
                     </div>
                 </div>
-                
-                <div class="custom-scripts-list">
-                    <h3 style="color: #007bff; margin-bottom: 15px;">Your Custom Scripts</h3>
-                    <div id="customScriptsList"></div>
+
+                <!-- Help dialog -->
+                <div class="modal-overlay" id="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+                    <div class="panel modal modal-wide">
+                        <div class="modal-head">
+                            <span class="ico-badge" aria-hidden="true"><svg class="i"><use href="#i-help"/></svg></span>
+                            <h2 id="infoTitle">Teleprompter controls</h2>
+                            <button type="button" class="icon-btn" data-close-info aria-label="Close help">
+                                <svg class="i" aria-hidden="true"><use href="#i-x"/></svg>
+                            </button>
+                        </div>
+                        <ul class="help-list">
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg></span><span><strong>Play / Pause</strong><span>Start or stop auto-scrolling. Settings tuck away automatically while playing.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-reset"/></svg></span><span><strong>Reset</strong><span>Return to the beginning of the script and clear the timer.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-mirror"/></svg></span><span><strong>Mirror</strong><span>Flip text horizontally for use with teleprompter glass.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-guide"/></svg></span><span><strong>Guide line</strong><span>Show or hide a reading guide across the middle of the stage.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-maximize"/></svg></span><span><strong>Fullscreen</strong><span>Enter or exit fullscreen mode.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-gauge"/></svg></span><span><strong>Speed &amp; font size</strong><span>Adjust scrolling speed (1–10) and text size (16–72px). Use the mouse wheel over either slider for fine control.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-mic"/></svg></span><span><strong>Record</strong><span>Start or stop voice recording. The audio downloads automatically when stopped.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-palette"/></svg></span><span><strong>Stage colours</strong><span>Customise background and text colours. Your choice is remembered.</span></span></li>
+                            <li><span class="ico-badge"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg></span><span><strong>Settings toggle</strong><span>Show or hide the settings panel to give the stage more room.</span></span></li>
+                        </ul>
+                        <div class="tp-section-head help-sub">
+                            <svg class="i" aria-hidden="true"><use href="#i-keyboard"/></svg>
+                            <h2>Shortcuts</h2>
+                        </div>
+                        <ul class="shortcuts">
+                            <li><span><kbd>Space</kbd></span><span>Play / pause</span></li>
+                            <li><span><kbd>Esc</kbd></span><span>Close this dialog</span></li>
+                            <li><span>Scroll wheel</span><span>Manual scrolling while paused</span></li>
+                            <li><span>Touch drag</span><span>Manual scrolling while paused</span></li>
+                        </ul>
+                        <div class="help-foot">
+                            <button type="button" id="closeInfoBtn" class="btn btn-primary">Got it</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Script Management Modal -->
+                <div class="modal-overlay" id="scriptModal" role="dialog" aria-modal="true" aria-labelledby="scriptModalTitle">
+                    <div class="panel modal">
+                        <div class="modal-head">
+                            <span class="ico-badge" aria-hidden="true"><svg class="i"><use href="#i-file"/></svg></span>
+                            <h2 id="scriptModalTitle">Custom scripts</h2>
+                            <button type="button" class="icon-btn" id="closeScriptModalBtn" aria-label="Close custom scripts">
+                                <svg class="i" aria-hidden="true"><use href="#i-x"/></svg>
+                            </button>
+                        </div>
+                        <p class="form-mode" id="formMode">Create a new script. It is saved in this browser only.</p>
+                        <div class="modal-form">
+                            <div class="field">
+                                <label class="label" for="scriptTitle">Script title</label>
+                                <input type="text" id="scriptTitle" class="input" placeholder="e.g. Quarterly update" autocomplete="off">
+                            </div>
+                            <div class="field">
+                                <label class="label" for="scriptContentInput">Script content</label>
+                                <textarea id="scriptContentInput" class="textarea" placeholder="Enter your script content here..."></textarea>
+                                <span class="hint">Line breaks are kept on the stage.</span>
+                            </div>
+                            <div class="modal-buttons">
+                                <button type="button" id="saveScriptBtn" class="btn btn-primary">
+                                    <svg class="i" aria-hidden="true"><use href="#i-plus"/></svg><span class="btn-label">Save script</span>
+                                </button>
+                                <button type="button" id="cancelScriptBtn" class="btn btn-ghost">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div class="custom-scripts-list">
+                            <div class="tp-section-head">
+                                <svg class="i" aria-hidden="true"><use href="#i-file"/></svg>
+                                <h2>Your custom scripts</h2>
+                            </div>
+                            <div id="customScriptsList"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
+    </main>
+
+    <footer class="site-footer">
+        <div class="wrap wrap-wide">
+            <span>&copy; <span data-year>2026</span> Shakil Hosen</span>
+            <nav class="footer-links"><a href="/">Home</a><a href="/#tools">All tools</a><a href="/contact.html">Contact</a></nav>
+        </div>
+    </footer>
+
+    <script src="/assets/tools.js" defer></script>
     <script>
         // Script Database
         const scripts = [
@@ -1532,7 +1395,7 @@
                 `
             }
         ];
-        
+
         // Application State
         let state = {
             currentScript: 0,
@@ -1543,6 +1406,7 @@
             isMirrored: false,
             showCenterLine: false,
             isFullscreen: false,
+            isPseudoFullscreen: false,
             scrollInterval: null,
             settingsCollapsed: false,
             editingScriptId: null,
@@ -1553,12 +1417,13 @@
             backgroundColor: '#000000',
             textColor: '#ffffff',
             startTime: null,
-            elapsedTime: 0
+            elapsedTime: 0,
+            lastFocus: null
         };
-        
+
         // Custom Scripts Storage
         let customScripts = [];
-        
+
         // DOM Elements
         const elements = {
             scriptSelect: document.getElementById('scriptSelect'),
@@ -1585,6 +1450,8 @@
             controlsHeader: document.getElementById('controlsHeader'),
             manageScriptsBtn: document.getElementById('manageScriptsBtn'),
             scriptModal: document.getElementById('scriptModal'),
+            closeScriptModalBtn: document.getElementById('closeScriptModalBtn'),
+            formMode: document.getElementById('formMode'),
             scriptTitle: document.getElementById('scriptTitle'),
             scriptContentInput: document.getElementById('scriptContentInput'),
             saveScriptBtn: document.getElementById('saveScriptBtn'),
@@ -1600,82 +1467,119 @@
             timerValue: document.getElementById('timerValue'),
             estimatedTime: document.getElementById('estimatedTime')
         };
-        
+
+        // UI helpers
+        function iconMarkup(name, fill) {
+            return `<svg class="i${fill ? ' i-fill' : ''}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+        }
+
+        function setButton(btn, icon, label, labelClass, fill) {
+            btn.innerHTML = iconMarkup(icon, fill) + `<span class="${labelClass || 'tool-label'}">${label}</span>`;
+            btn.setAttribute('aria-label', label);
+        }
+
+        function notify(message, type) {
+            if (typeof window.showToast === 'function') {
+                window.showToast(message, type);
+            } else {
+                alert(message);
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
         // Initialize
         function init() {
             loadCustomScripts();
             updateScriptDropdown();
             loadScript(0);
             loadColors();
+            updateFontSize(elements.fontSizeRange.value);
+            updateSpeed(elements.speedRange.value);
             attachEventListeners();
-            // Set initial state of settings toggle (settings visible by default)
+            // Settings visible by default
             elements.settingsToggle.classList.add('active');
+            elements.settingsToggle.setAttribute('aria-expanded', 'true');
         }
-        
+
         // Load Custom Scripts from localStorage
         function loadCustomScripts() {
-            const stored = localStorage.getItem('teleprompterCustomScripts');
+            let stored = null;
+            try {
+                stored = localStorage.getItem('teleprompterCustomScripts');
+            } catch (e) {
+                stored = null;
+            }
             if (stored) {
                 try {
                     customScripts = JSON.parse(stored);
+                    if (!Array.isArray(customScripts)) customScripts = [];
                 } catch (e) {
                     console.error('Error loading custom scripts:', e);
                     customScripts = [];
                 }
             }
         }
-        
+
         // Save Custom Scripts to localStorage
         function saveCustomScripts() {
             try {
                 localStorage.setItem('teleprompterCustomScripts', JSON.stringify(customScripts));
+                return true;
             } catch (e) {
                 console.error('Failed to save custom scripts:', e);
-                alert('Unable to save scripts. Your browser storage may be full or disabled.');
+                notify('Unable to save scripts. Your browser storage may be full or disabled.', 'error');
+                return false;
             }
         }
-        
+
         // Update Script Dropdown
         function updateScriptDropdown() {
             const currentValue = elements.scriptSelect.value;
             elements.scriptSelect.innerHTML = '';
-            
-            // Add default scripts
+
+            // Default scripts
+            const builtIn = document.createElement('optgroup');
+            builtIn.label = 'Sample scripts';
             scripts.forEach((script, index) => {
                 const option = document.createElement('option');
                 option.value = index;
                 option.textContent = script.title;
-                elements.scriptSelect.appendChild(option);
+                builtIn.appendChild(option);
             });
-            
-            // Add custom scripts
+            elements.scriptSelect.appendChild(builtIn);
+
+            // Custom scripts
             if (customScripts.length > 0) {
-                const separator = document.createElement('option');
-                separator.disabled = true;
-                separator.textContent = '──── Custom Scripts ────';
-                elements.scriptSelect.appendChild(separator);
-                
-                customScripts.forEach((script, index) => {
+                const group = document.createElement('optgroup');
+                group.label = 'Custom scripts';
+                customScripts.forEach(script => {
                     const option = document.createElement('option');
                     option.value = 'custom-' + script.id;
                     option.textContent = '★ ' + script.title;
-                    elements.scriptSelect.appendChild(option);
+                    group.appendChild(option);
                 });
+                elements.scriptSelect.appendChild(group);
             }
-            
-            // Restore selection if valid
+
+            // Restore selection if still valid
             if (currentValue) {
                 elements.scriptSelect.value = currentValue;
+                if (elements.scriptSelect.value !== currentValue) {
+                    elements.scriptSelect.value = '0';
+                }
             }
         }
-        
+
         // Load Script
         function loadScript(indexOrId) {
             if (typeof indexOrId === 'string' && indexOrId.startsWith('custom-')) {
                 const customId = indexOrId.replace('custom-', '');
                 const customScript = customScripts.find(s => s.id === customId);
                 if (customScript) {
-                    elements.scriptContent.innerHTML = `<div class="script-title">${customScript.title}</div>${customScript.content.replace(/\n/g, '<br>')}`;
+                    elements.scriptContent.innerHTML = `<div class="script-title">${escapeHtml(customScript.title)}</div>${customScript.content.replace(/\n/g, '<br>')}`;
                 }
             } else {
                 const index = parseInt(indexOrId);
@@ -1684,45 +1588,71 @@
             }
             resetScroll();
         }
-        
+
         // Toggle Settings Panel
         function toggleSettings() {
             state.settingsCollapsed = !state.settingsCollapsed;
-            
-            if (state.settingsCollapsed) {
-                elements.controlsHeader.classList.add('collapsed');
-                elements.settingsToggle.classList.remove('active');
+
+            elements.controlsHeader.classList.toggle('collapsed', state.settingsCollapsed);
+            elements.app.classList.toggle('settings-collapsed', state.settingsCollapsed);
+            elements.settingsToggle.classList.toggle('active', !state.settingsCollapsed);
+            elements.settingsToggle.setAttribute('aria-expanded', String(!state.settingsCollapsed));
+            updateProgress();
+        }
+
+        // Dialog helpers
+        function openDialog(overlay, focusEl) {
+            state.lastFocus = document.activeElement;
+            overlay.classList.add('active');
+            (focusEl || overlay.querySelector('button, input, textarea')).focus();
+        }
+
+        function closeDialog(overlay) {
+            overlay.classList.remove('active');
+            if (state.lastFocus && typeof state.lastFocus.focus === 'function') {
+                state.lastFocus.focus();
+            }
+            state.lastFocus = null;
+        }
+
+        function setFormMode(editing, title) {
+            if (editing) {
+                elements.formMode.innerHTML = `Editing <strong>${escapeHtml(title)}</strong>`;
+                setButton(elements.saveScriptBtn, 'edit', 'Update script', 'btn-label');
             } else {
-                elements.controlsHeader.classList.remove('collapsed');
-                elements.settingsToggle.classList.add('active');
+                elements.formMode.textContent = 'Create a new script. It is saved in this browser only.';
+                setButton(elements.saveScriptBtn, 'plus', 'Save script', 'btn-label');
             }
         }
-        
+
         // Open Script Modal
         function openScriptModal() {
             state.editingScriptId = null;
             elements.scriptTitle.value = '';
             elements.scriptContentInput.value = '';
-            elements.scriptModal.classList.add('active');
+            setFormMode(false);
             renderCustomScriptsList();
+            openDialog(elements.scriptModal, elements.scriptTitle);
         }
-        
+
         // Close Script Modal
         function closeScriptModal() {
-            elements.scriptModal.classList.remove('active');
+            closeDialog(elements.scriptModal);
             state.editingScriptId = null;
         }
-        
+
         // Save Custom Script
         function saveCustomScript() {
             const title = elements.scriptTitle.value.trim();
             const content = elements.scriptContentInput.value.trim();
-            
+
             if (!title || !content) {
-                alert('Please enter both title and content');
+                notify('Please enter both title and content', 'error');
+                (title ? elements.scriptContentInput : elements.scriptTitle).focus();
                 return;
             }
-            
+
+            const wasEditing = !!state.editingScriptId;
             if (state.editingScriptId) {
                 // Edit existing script
                 const script = customScripts.find(s => s.id === state.editingScriptId);
@@ -1739,15 +1669,23 @@
                 };
                 customScripts.push(newScript);
             }
-            
-            saveCustomScripts();
+
+            const editedId = state.editingScriptId;
+            if (saveCustomScripts()) {
+                notify(wasEditing ? 'Script updated' : 'Script saved', 'ok');
+            }
             updateScriptDropdown();
+            // Refresh the stage if the edited script is currently showing
+            if (editedId && elements.scriptSelect.value === 'custom-' + editedId) {
+                loadScript(elements.scriptSelect.value);
+            }
             elements.scriptTitle.value = '';
             elements.scriptContentInput.value = '';
             state.editingScriptId = null;
+            setFormMode(false);
             renderCustomScriptsList();
         }
-        
+
         // Edit Custom Script
         function editCustomScript(id) {
             const script = customScripts.find(s => s.id === id);
@@ -1755,67 +1693,93 @@
                 state.editingScriptId = id;
                 elements.scriptTitle.value = script.title;
                 elements.scriptContentInput.value = script.content;
+                setFormMode(true, script.title);
+                renderCustomScriptsList();
+                elements.scriptTitle.focus();
             }
         }
-        
+
+        // Use (load) a custom script on the stage
+        function useCustomScript(id) {
+            elements.scriptSelect.value = 'custom-' + id;
+            loadScript('custom-' + id);
+            closeScriptModal();
+        }
+
         // Delete Custom Script
         function deleteCustomScript(id) {
             if (confirm('Are you sure you want to delete this script?')) {
                 // Check if the deleted script is currently selected
                 const currentValue = elements.scriptSelect.value;
                 const deletingCurrentScript = currentValue === 'custom-' + id;
-                
+
                 customScripts = customScripts.filter(s => s.id !== id);
+                if (state.editingScriptId === id) {
+                    state.editingScriptId = null;
+                    elements.scriptTitle.value = '';
+                    elements.scriptContentInput.value = '';
+                    setFormMode(false);
+                }
                 saveCustomScripts();
                 updateScriptDropdown();
                 renderCustomScriptsList();
-                
+
                 // If we deleted the currently selected script, switch to default
                 if (deletingCurrentScript) {
                     elements.scriptSelect.value = '0';
                     loadScript(0);
                 }
+                notify('Script deleted');
             }
         }
-        
+
+        function makeSmallBtn(cls, icon, label, ariaLabel, onClick) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sm ' + cls;
+            btn.innerHTML = iconMarkup(icon) + `<span>${label}</span>`;
+            btn.setAttribute('aria-label', ariaLabel);
+            btn.addEventListener('click', onClick);
+            return btn;
+        }
+
         // Render Custom Scripts List
         function renderCustomScriptsList() {
             elements.customScriptsList.innerHTML = '';
-            
+
             if (customScripts.length === 0) {
-                elements.customScriptsList.innerHTML = '<p style="color: #aaa; text-align: center;">No custom scripts yet. Create one above!</p>';
+                elements.customScriptsList.innerHTML = '<p class="empty-state">No custom scripts yet. Create one above!</p>';
                 return;
             }
-            
+
             customScripts.forEach(script => {
                 const item = document.createElement('div');
-                item.className = 'custom-script-item';
-                
+                item.className = 'custom-script-item' + (state.editingScriptId === script.id ? ' editing' : '');
+
+                const info = document.createElement('div');
+                info.style.minWidth = '0';
                 const title = document.createElement('h3');
                 title.textContent = script.title;
-                
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                const words = script.content.trim().split(/\s+/).filter(Boolean).length;
+                meta.textContent = `${words} word${words === 1 ? '' : 's'}`;
+                info.appendChild(title);
+                info.appendChild(meta);
+
                 const actions = document.createElement('div');
                 actions.className = 'custom-script-actions';
-                
-                const editBtn = document.createElement('button');
-                editBtn.textContent = 'Edit';
-                editBtn.onclick = () => editCustomScript(script.id);
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Delete';
-                deleteBtn.className = 'danger';
-                deleteBtn.onclick = () => deleteCustomScript(script.id);
-                
-                actions.appendChild(editBtn);
-                actions.appendChild(deleteBtn);
-                
-                item.appendChild(title);
+                actions.appendChild(makeSmallBtn('btn-soft', 'play', 'Use', `Use ${script.title}`, () => useCustomScript(script.id)));
+                actions.appendChild(makeSmallBtn('btn-ghost', 'edit', 'Edit', `Edit ${script.title}`, () => editCustomScript(script.id)));
+                actions.appendChild(makeSmallBtn('btn-danger', 'trash', 'Delete', `Delete ${script.title}`, () => deleteCustomScript(script.id)));
+
+                item.appendChild(info);
                 item.appendChild(actions);
-                
+
                 elements.customScriptsList.appendChild(item);
             });
         }
-        
+
         // Reset Scroll
         function resetScroll() {
             state.scrollPosition = 0;
@@ -1826,13 +1790,14 @@
                 togglePlay();
             }
         }
-        
+
         // Toggle Play/Pause
         function togglePlay() {
             state.isPlaying = !state.isPlaying;
-            
+            elements.app.classList.toggle('is-playing', state.isPlaying);
+
             if (state.isPlaying) {
-                elements.playPauseBtn.innerHTML = '⏸ Pause';
+                setButton(elements.playPauseBtn, 'pause', 'Pause', 'tool-label', true);
                 elements.playPauseBtn.classList.add('active');
                 startScrolling();
                 startTimer();
@@ -1840,33 +1805,38 @@
                 if (!state.settingsCollapsed) {
                     toggleSettings();
                 }
+                // Bring the stage into view (mainly for mobile)
+                const rect = elements.display.getBoundingClientRect();
+                if (!state.isFullscreen && (rect.top < 0 || rect.bottom > window.innerHeight)) {
+                    elements.display.closest('.tp-main').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
             } else {
-                elements.playPauseBtn.innerHTML = '▶ Play';
+                setButton(elements.playPauseBtn, 'play', 'Play', 'tool-label', true);
                 elements.playPauseBtn.classList.remove('active');
                 stopScrolling();
                 stopTimer();
             }
         }
-        
+
         // Start Scrolling
         function startScrolling() {
             const scrollSpeed = state.speed * 0.5; // pixels per frame
-            
+
             state.scrollInterval = setInterval(() => {
                 state.scrollPosition += scrollSpeed;
                 elements.content.style.top = `-${state.scrollPosition}px`;
                 updateProgress();
-                
+
                 // Check if reached the end
                 const contentHeight = elements.content.scrollHeight;
                 const displayHeight = elements.display.clientHeight;
-                
+
                 if (state.scrollPosition >= contentHeight - displayHeight + 100) {
                     togglePlay();
                 }
             }, 50);
         }
-        
+
         // Stop Scrolling
         function stopScrolling() {
             if (state.scrollInterval) {
@@ -1874,53 +1844,53 @@
                 state.scrollInterval = null;
             }
         }
-        
+
         // Update Progress
         function updateProgress() {
             const contentHeight = elements.content.scrollHeight;
             const displayHeight = elements.display.clientHeight;
             const maxScroll = contentHeight - displayHeight;
-            
+
             if (maxScroll > 0) {
                 const progress = (state.scrollPosition / maxScroll) * 100;
                 elements.progressBar.style.width = Math.min(progress, 100) + '%';
             }
-            
+
             // Update timer
             updateTimer();
         }
-        
+
         // Format time as MM:SS
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         }
-        
+
         // Update Timer Display
         function updateTimer() {
             if (!state.isPlaying) {
                 return;
             }
-            
+
             // Calculate elapsed time
             const currentTime = Date.now();
             const elapsed = (currentTime - state.startTime) / 1000 + state.elapsedTime;
-            
+
             // Update elapsed time display
             elements.timerValue.textContent = formatTime(elapsed);
-            
+
             // Calculate estimated time remaining
             const contentHeight = elements.content.scrollHeight;
             const displayHeight = elements.display.clientHeight;
             const maxScroll = contentHeight - displayHeight;
-            
+
             if (maxScroll > 0) {
                 const remainingScroll = maxScroll - state.scrollPosition;
                 const scrollSpeed = state.speed * 0.5; // pixels per frame (50ms interval)
                 const estimatedFrames = remainingScroll / scrollSpeed;
                 const estimatedSeconds = (estimatedFrames * 50) / 1000; // 50ms per frame
-                
+
                 if (estimatedSeconds > 0 && isFinite(estimatedSeconds)) {
                     elements.estimatedTime.textContent = `Est: ${formatTime(estimatedSeconds)}`;
                 } else {
@@ -1930,13 +1900,13 @@
                 elements.estimatedTime.textContent = 'Est: --:--';
             }
         }
-        
+
         // Start Timer
         function startTimer() {
             state.startTime = Date.now();
             updateTimer();
         }
-        
+
         // Stop Timer
         function stopTimer() {
             if (state.startTime) {
@@ -1945,7 +1915,7 @@
                 state.startTime = null;
             }
         }
-        
+
         // Reset Timer
         function resetTimer() {
             state.elapsedTime = 0;
@@ -1953,43 +1923,41 @@
             elements.timerValue.textContent = '00:00';
             elements.estimatedTime.textContent = 'Est: --:--';
         }
-        
+
         // Toggle Mirror
         function toggleMirror() {
             state.isMirrored = !state.isMirrored;
-            
-            if (state.isMirrored) {
-                elements.content.classList.add('mirrored');
-                elements.mirrorBtn.classList.add('active');
-            } else {
-                elements.content.classList.remove('mirrored');
-                elements.mirrorBtn.classList.remove('active');
-            }
+            elements.content.classList.toggle('mirrored', state.isMirrored);
+            elements.mirrorBtn.classList.toggle('active', state.isMirrored);
+            elements.mirrorBtn.setAttribute('aria-pressed', String(state.isMirrored));
         }
-        
+
         // Toggle Center Line
         function toggleCenterLine() {
             state.showCenterLine = !state.showCenterLine;
-            
-            if (state.showCenterLine) {
-                elements.centerLine.classList.add('active');
-                elements.centerLineBtn.classList.add('active');
-            } else {
-                elements.centerLine.classList.remove('active');
-                elements.centerLineBtn.classList.remove('active');
-            }
+            elements.centerLine.classList.toggle('active', state.showCenterLine);
+            elements.centerLineBtn.classList.toggle('active', state.showCenterLine);
+            elements.centerLineBtn.setAttribute('aria-pressed', String(state.showCenterLine));
         }
-        
+
         // Toggle Fullscreen
         function toggleFullscreen() {
+            const app = elements.app;
+            const canNative = !!(app.requestFullscreen || app.webkitRequestFullscreen || app.msRequestFullscreen);
+
             if (!state.isFullscreen) {
-                if (elements.app.requestFullscreen) {
-                    elements.app.requestFullscreen();
-                } else if (elements.app.webkitRequestFullscreen) {
-                    elements.app.webkitRequestFullscreen();
-                } else if (elements.app.msRequestFullscreen) {
-                    elements.app.msRequestFullscreen();
+                if (canNative) {
+                    const req = app.requestFullscreen ? app.requestFullscreen() :
+                        app.webkitRequestFullscreen ? app.webkitRequestFullscreen() : app.msRequestFullscreen();
+                    if (req && typeof req.catch === 'function') {
+                        req.catch(() => setPseudoFullscreen(true));
+                    }
+                } else {
+                    // Fallback for browsers without the Fullscreen API (e.g. iPhone Safari)
+                    setPseudoFullscreen(true);
                 }
+            } else if (state.isPseudoFullscreen) {
+                setPseudoFullscreen(false);
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
@@ -2000,47 +1968,69 @@
                 }
             }
         }
-        
+
+        function setPseudoFullscreen(on) {
+            state.isPseudoFullscreen = on;
+            elements.app.classList.toggle('pseudo-fs', on);
+            document.body.style.overflow = on ? 'hidden' : '';
+            applyFullscreenState(on);
+        }
+
+        function applyFullscreenState(on) {
+            state.isFullscreen = on;
+            elements.app.classList.toggle('fullscreen', on);
+            elements.fullscreenBtn.classList.toggle('active', on);
+            if (on) {
+                setButton(elements.fullscreenBtn, 'minimize', 'Exit fullscreen');
+            } else {
+                setButton(elements.fullscreenBtn, 'maximize', 'Fullscreen');
+                elements.fullscreenBtn.setAttribute('aria-label', 'Enter fullscreen');
+            }
+            updateProgress();
+        }
+
         // Update Speed
         function updateSpeed(value) {
             state.speed = parseInt(value);
             elements.speedValue.textContent = state.speed;
-            elements.speedIndicator.textContent = `Speed: ${state.speed}x`;
-            
+            elements.speedIndicator.textContent = `${state.speed}x`;
+            elements.speedRange.setAttribute('aria-valuetext', `${state.speed}x`);
+
             if (state.isPlaying) {
                 stopScrolling();
                 startScrolling();
             }
         }
-        
+
         // Update Font Size
         function updateFontSize(value) {
             state.fontSize = parseInt(value);
             elements.fontSizeValue.textContent = state.fontSize + 'px';
             elements.content.style.fontSize = state.fontSize + 'px';
+            elements.fontSizeRange.setAttribute('aria-valuetext', `${state.fontSize} pixels`);
         }
-        
+
         // Show/Hide Info
         function toggleInfo(show) {
             if (show) {
-                elements.infoOverlay.classList.add('active');
-            } else {
-                elements.infoOverlay.classList.remove('active');
+                openDialog(elements.infoOverlay, elements.closeInfoBtn);
+            } else if (elements.infoOverlay.classList.contains('active')) {
+                closeDialog(elements.infoOverlay);
             }
         }
-        
+
         // Load Colors from localStorage
         function loadColors() {
             try {
                 const savedBgColor = localStorage.getItem('teleprompterBgColor');
                 const savedTextColor = localStorage.getItem('teleprompterTextColor');
-                
+
                 if (savedBgColor) {
                     state.backgroundColor = savedBgColor;
                     elements.bgColorPicker.value = savedBgColor;
                     elements.display.style.backgroundColor = savedBgColor;
                 }
-                
+
                 if (savedTextColor) {
                     state.textColor = savedTextColor;
                     elements.textColorPicker.value = savedTextColor;
@@ -2050,7 +2040,7 @@
                 console.error('Error loading colors:', e);
             }
         }
-        
+
         // Update Background Color
         function updateBackgroundColor(color) {
             state.backgroundColor = color;
@@ -2061,7 +2051,7 @@
                 console.error('Error saving background color:', e);
             }
         }
-        
+
         // Update Text Color
         function updateTextColor(color) {
             state.textColor = color;
@@ -2072,41 +2062,52 @@
                 console.error('Error saving text color:', e);
             }
         }
-        
+
+        function setRecordingUi(recording) {
+            elements.recordBtn.classList.toggle('recording', recording);
+            if (recording) {
+                setButton(elements.recordBtn, 'stop', 'Stop recording', 'btn-label');
+                elements.recordingStatus.textContent = 'Recording...';
+            } else {
+                setButton(elements.recordBtn, 'mic', 'Start recording', 'btn-label');
+                elements.recordingStatus.textContent = '';
+            }
+        }
+
         // Toggle Recording
         async function toggleRecording() {
             if (!state.isRecording) {
                 // Check for browser support
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert('Voice recording is not supported in your browser. Please use a modern browser like Chrome, Firefox, or Edge.');
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+                    notify('Voice recording is not supported in your browser. Please use a modern browser like Chrome, Firefox, or Edge.', 'error');
                     return;
                 }
-                
+
                 // Start recording
                 try {
                     // Clean up any existing stream
                     if (state.mediaStream) {
                         state.mediaStream.getTracks().forEach(track => track.stop());
                     }
-                    
+
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     state.mediaStream = stream;
                     state.mediaRecorder = new MediaRecorder(stream);
                     state.audioChunks = [];
-                    
+
                     state.mediaRecorder.addEventListener('dataavailable', event => {
                         state.audioChunks.push(event.data);
                     });
-                    
+
                     state.mediaRecorder.addEventListener('stop', () => {
                         const audioBlob = new Blob(state.audioChunks, { type: 'audio/webm' });
                         const audioUrl = URL.createObjectURL(audioBlob);
-                        
+
                         // Create filename with local timestamp
                         const now = new Date();
                         const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}-${String(now.getSeconds()).padStart(2,'0')}`;
                         const filename = `teleprompter-recording-${timestamp}.webm`;
-                        
+
                         // Create download link
                         const a = document.createElement('a');
                         a.style.display = 'none';
@@ -2114,27 +2115,26 @@
                         a.download = filename;
                         document.body.appendChild(a);
                         a.click();
-                        
+
                         // Cleanup
                         setTimeout(() => {
                             document.body.removeChild(a);
                             URL.revokeObjectURL(audioUrl);
                         }, 100);
-                        
+
                         // Stop all tracks
                         if (state.mediaStream) {
                             state.mediaStream.getTracks().forEach(track => track.stop());
                             state.mediaStream = null;
                         }
+                        notify('Recording saved: ' + filename, 'ok');
                     });
-                    
+
                     state.mediaRecorder.start();
                     state.isRecording = true;
-                    elements.recordBtn.classList.add('recording');
-                    elements.recordBtn.textContent = '⏹ Stop';
-                    elements.recordingStatus.textContent = 'Recording...';
+                    setRecordingUi(true);
                 } catch (error) {
-                    console.error('Error accessing microphone:', error);
+                    console.warn('Error accessing microphone:', error);
                     let errorMessage = 'Unable to access microphone. ';
                     if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
                         errorMessage += 'Please grant microphone permissions and try again.';
@@ -2143,7 +2143,7 @@
                     } else {
                         errorMessage += 'Please check your browser settings and try again.';
                     }
-                    alert(errorMessage);
+                    notify(errorMessage, 'error');
                 }
             } else {
                 // Stop recording
@@ -2154,100 +2154,112 @@
                 } catch (error) {
                     console.error('Error stopping recording:', error);
                 }
-                
+
                 state.isRecording = false;
-                elements.recordBtn.classList.remove('recording');
-                elements.recordBtn.textContent = '🎤 Record';
-                elements.recordingStatus.textContent = '';
+                setRecordingUi(false);
             }
         }
-        
+
         // Cleanup recording on page unload
         window.addEventListener('beforeunload', () => {
             if (state.mediaStream) {
                 state.mediaStream.getTracks().forEach(track => track.stop());
             }
         });
-        
+
+        function manualScroll(delta) {
+            state.scrollPosition += delta;
+            state.scrollPosition = Math.max(0, state.scrollPosition);
+            elements.content.style.top = `-${state.scrollPosition}px`;
+            updateProgress();
+        }
+
         // Event Listeners
         function attachEventListeners() {
             // Settings Toggle
             elements.settingsToggle.addEventListener('click', toggleSettings);
-            
+
             // Script Selection
             elements.scriptSelect.addEventListener('change', (e) => {
                 loadScript(e.target.value);
             });
-            
+
             // Manage Scripts
             elements.manageScriptsBtn.addEventListener('click', openScriptModal);
-            
+
             // Script Modal
             elements.saveScriptBtn.addEventListener('click', saveCustomScript);
             elements.cancelScriptBtn.addEventListener('click', closeScriptModal);
+            elements.closeScriptModalBtn.addEventListener('click', closeScriptModal);
             elements.scriptModal.addEventListener('click', (e) => {
                 if (e.target === elements.scriptModal) {
                     closeScriptModal();
                 }
             });
-            
+
             // Play/Pause
             elements.playPauseBtn.addEventListener('click', togglePlay);
-            
+
             // Reset
             elements.resetBtn.addEventListener('click', resetScroll);
-            
+
             // Mirror
             elements.mirrorBtn.addEventListener('click', toggleMirror);
-            
+
             // Center Line
             elements.centerLineBtn.addEventListener('click', toggleCenterLine);
-            
+
             // Fullscreen
             elements.fullscreenBtn.addEventListener('click', toggleFullscreen);
-            
+
             // Speed
             elements.speedRange.addEventListener('input', (e) => {
                 updateSpeed(e.target.value);
             });
-            
+
             // Font Size
             elements.fontSizeRange.addEventListener('input', (e) => {
                 updateFontSize(e.target.value);
             });
-            
+
             // Voice Recording
             elements.recordBtn.addEventListener('click', toggleRecording);
-            
+
             // Color Pickers
             elements.bgColorPicker.addEventListener('input', (e) => {
                 updateBackgroundColor(e.target.value);
             });
-            
+
             elements.textColorPicker.addEventListener('input', (e) => {
                 updateTextColor(e.target.value);
             });
-            
+
             // Color Reset Buttons
             elements.resetBgColorBtn.addEventListener('click', () => {
                 elements.bgColorPicker.value = '#000000';
                 updateBackgroundColor('#000000');
             });
-            
+
             elements.resetTextColorBtn.addEventListener('click', () => {
                 elements.textColorPicker.value = '#ffffff';
                 updateTextColor('#ffffff');
             });
-            
+
             // Info
             elements.infoBtn.addEventListener('click', () => toggleInfo(true));
             elements.closeInfoBtn.addEventListener('click', () => toggleInfo(false));
-            
+            document.querySelectorAll('[data-close-info]').forEach(btn => btn.addEventListener('click', () => toggleInfo(false)));
+            elements.infoOverlay.addEventListener('click', (e) => {
+                if (e.target === elements.infoOverlay) {
+                    toggleInfo(false);
+                }
+            });
+
             // Keyboard Shortcuts
             document.addEventListener('keydown', (e) => {
                 // Don't trigger shortcuts when typing in inputs
                 const isTyping = e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA';
-                
+
                 if (e.code === 'Space' && !isTyping && !elements.infoOverlay.classList.contains('active') && !elements.scriptModal.classList.contains('active')) {
                     e.preventDefault();
                     togglePlay();
@@ -2256,21 +2268,34 @@
                         toggleInfo(false);
                     } else if (elements.scriptModal.classList.contains('active')) {
                         closeScriptModal();
+                    } else if (state.isPseudoFullscreen) {
+                        setPseudoFullscreen(false);
                     }
                 }
             });
-            
+
             // Mouse Wheel for Manual Scrolling
             elements.display.addEventListener('wheel', (e) => {
                 if (!state.isPlaying) {
                     e.preventDefault();
-                    state.scrollPosition += e.deltaY * 0.5;
-                    state.scrollPosition = Math.max(0, state.scrollPosition);
-                    elements.content.style.top = `-${state.scrollPosition}px`;
-                    updateProgress();
+                    manualScroll(e.deltaY * 0.5);
                 }
-            });
-            
+            }, { passive: false });
+
+            // Touch drag for Manual Scrolling (mobile)
+            let touchY = null;
+            elements.display.addEventListener('touchstart', (e) => {
+                touchY = e.touches.length === 1 ? e.touches[0].clientY : null;
+            }, { passive: true });
+            elements.display.addEventListener('touchmove', (e) => {
+                if (touchY === null || state.isPlaying) return;
+                const y = e.touches[0].clientY;
+                manualScroll(touchY - y);
+                touchY = y;
+                e.preventDefault();
+            }, { passive: false });
+            elements.display.addEventListener('touchend', () => { touchY = null; });
+
             // Mouse Wheel for Font Size Control (Desktop)
             elements.fontSizeRange.addEventListener('wheel', (e) => {
                 e.preventDefault();
@@ -2281,8 +2306,8 @@
                 const newSize = Math.min(maxSize, Math.max(minSize, currentSize + delta));
                 elements.fontSizeRange.value = newSize;
                 updateFontSize(newSize);
-            });
-            
+            }, { passive: false });
+
             // Mouse Wheel for Speed Control (Desktop)
             elements.speedRange.addEventListener('wheel', (e) => {
                 e.preventDefault();
@@ -2293,29 +2318,22 @@
                 const newSpeed = Math.min(maxSpeed, Math.max(minSpeed, currentSpeed + delta));
                 elements.speedRange.value = newSpeed;
                 updateSpeed(newSpeed);
-            });
-            
+            }, { passive: false });
+
             // Fullscreen Change
             document.addEventListener('fullscreenchange', handleFullscreenChange);
             document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
             document.addEventListener('msfullscreenchange', handleFullscreenChange);
-            
+
             function handleFullscreenChange() {
-                state.isFullscreen = !!(document.fullscreenElement || 
-                                        document.webkitFullscreenElement || 
-                                        document.msFullscreenElement);
-                
-                if (state.isFullscreen) {
-                    elements.app.classList.add('fullscreen');
-                    elements.fullscreenBtn.innerHTML = '⛶ Exit Fullscreen';
-                    elements.fullscreenBtn.classList.add('active');
-                } else {
-                    elements.app.classList.remove('fullscreen');
-                    elements.fullscreenBtn.innerHTML = '⛶ Fullscreen';
-                    elements.fullscreenBtn.classList.remove('active');
+                const native = !!(document.fullscreenElement ||
+                                  document.webkitFullscreenElement ||
+                                  document.msFullscreenElement);
+                if (!state.isPseudoFullscreen) {
+                    applyFullscreenState(native);
                 }
             }
-            
+
             // Window Resize (with debouncing)
             let resizeTimeout;
             window.addEventListener('resize', () => {
@@ -2325,7 +2343,7 @@
                 }, 100);
             });
         }
-        
+
         // Initialize on Load
         init();
     </script>

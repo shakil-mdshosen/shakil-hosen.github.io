@@ -19,6 +19,14 @@ The payment portal allows users to make secure payments using various payment me
 - `ipn.html` - Instant Payment Notification handler
 - `README.md` - This documentation file
 
+## User Interface
+
+The pages use the site-wide design system (`/assets/tools.css`, `/assets/tools.js`), so they share the home page's header, footer, dark/light theme toggle and colour tokens. Page-specific styles are inline in each file and built on those tokens.
+
+- **`index.html`**: two-column checkout on desktop (form on the left; order summary, security notes and accepted methods on the right), single column on mobile. The order summary updates live from the amount, product and category fields. Validation uses the browser's own constraints (`required`, `min="10"`, `step="0.01"`, `type="email"`) but shows the messages inline and in an error summary that screen readers announce. The form field names, the SSLCommerz request and the redirect URLs are unchanged.
+- **`success.html` / `fail.html` / `cancel.html`**: a centred status card (green / red / amber) that shows the transaction details read from the query string (`tran_id`, `amount`, `currency`, `status`, `card_type`, `tran_date`, `error`/`error_message`), with a copy button for the transaction ID and links to try again or go home. These pages stay `noindex, nofollow`.
+- **`ipn.html`** is not meant for people to view and was left as it is.
+
 ## SSLCommerz Configuration
 
 ### Sandbox Credentials
@@ -114,4 +122,4 @@ For technical issues:
 
 ## License
 
-© 2025 Shakil Hosen
+© 2026 Shakil Hosen

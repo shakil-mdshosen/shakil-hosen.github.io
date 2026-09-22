@@ -26,6 +26,15 @@
     if (mq.addEventListener) mq.addEventListener("change", onChange);
   }
 
+  // Keep copyright years current; the markup carries a static fallback.
+  var year = String(new Date().getFullYear());
+  var fillYears = function () {
+    var els = document.querySelectorAll("[data-year]");
+    for (var i = 0; i < els.length; i++) els[i].textContent = year;
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fillYears);
+  else fillYears();
+
   var host;
   /** Show a short message. type: "ok" | "error" | undefined */
   window.showToast = function (message, type, ms) {
