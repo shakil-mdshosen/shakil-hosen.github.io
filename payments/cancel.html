@@ -5,185 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Cancelled | Shakil Hosen</title>
     <meta name="robots" content="noindex, nofollow">
-    
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="alternate icon" href="../favicon.ico">
-    
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="/assets/tools.css">
+    <script>(function(){var s;try{s=localStorage.getItem("theme")}catch(e){}var l=window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches;document.documentElement.setAttribute("data-theme",s==="light"||s==="dark"?s:(l?"light":"dark"))})();</script>
+
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            background-color: #f5f7fa;
-            color: #333;
+        .result { max-width: 600px; margin: clamp(28px, 6vw, 64px) auto 0; }
+        .result-card { text-align: center; padding: clamp(24px, 4vw, 40px); --tone: var(--warn); --tone-soft: var(--warn-soft); }
+        .status-icon {
+            width: 76px; height: 76px; margin: 0 auto 20px; border-radius: 50%;
+            display: grid; place-items: center; color: var(--tone); background: var(--tone-soft);
+            box-shadow: 0 0 0 8px color-mix(in srgb, var(--tone) 7%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--tone) 35%, transparent);
         }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .cancel-icon {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 30px;
-            background: #ffc107;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .cancel-icon svg {
-            width: 60px;
-            height: 60px;
-            fill: white;
-        }
-        h1 {
-            color: #ffc107;
-            margin: 0 0 20px 0;
-            font-size: 2.5rem;
-        }
-        .subtitle {
-            color: #6c757d;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-        }
-        .info-box {
-            background: #fff3cd;
-            color: #856404;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 30px 0;
-            border: 1px solid #ffeaa7;
-        }
-        .transaction-details {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
-            margin: 30px 0;
-            text-align: left;
-        }
-        .transaction-details h3 {
-            margin-top: 0;
-            color: #495057;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            font-weight: 500;
-            color: #495057;
-        }
-        .detail-value {
-            color: #212529;
-        }
-        .btn {
-            display: inline-block;
-            background: #007bff;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin: 10px;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background: #0056b3;
-        }
-        .btn-secondary {
-            background: #6c757d;
-        }
-        .btn-secondary:hover {
-            background: #545b62;
-        }
-        footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        
-        @media screen and (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            h1 {
-                font-size: 2rem;
-            }
-            .btn {
-                display: block;
-                margin: 10px 0;
-            }
-        }
+        .status-icon svg { width: 36px; height: 36px; }
+        .result-card h1 { font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.2rem); font-weight: 700; }
+        .result-card .subtitle { color: var(--text-2); margin: 10px auto 0; max-width: 44ch; }
+        .details { text-align: left; margin-top: 28px; background: var(--bg-inset); border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 18px; }
+        .details h2 { font-size: 0.72rem; font-family: var(--font-mono); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); padding: 12px 0 6px; }
+        .details dl { margin: 0; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid var(--line); font-size: 0.92rem; }
+        .detail-row dt { color: var(--text-2); flex: none; }
+        .detail-row dd { margin: 0; text-align: right; color: var(--text); font-weight: 500; min-width: 0; overflow-wrap: anywhere; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+        .detail-row dd.mono-val { font-family: var(--font-mono); font-size: 0.85rem; }
+        .detail-row .amount-val { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; }
+        .copy-btn { width: 30px; height: 30px; border-radius: 8px; }
+        .copy-btn svg { width: 14px; height: 14px; }
+        .copy-btn[hidden] { display: none; }
+        .result-note { margin-top: 18px; text-align: left; }
+        .result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
+        @media (max-width: 480px) { .result-actions .btn { width: 100%; } }
+        .help-list { margin: 8px 0 0; padding-left: 18px; color: var(--text-2); }
+        .help-list li + li { margin-top: 4px; }
+        .result-note p { margin: 0; }
+        .result-note strong + p, .result-note .help-list + p { margin-top: 6px; }
+        .result-note .help-list + p { margin-top: 10px; }
+        .powered { text-align: center; color: var(--text-3); font-size: 0.82rem; margin-top: 16px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="cancel-icon">
-            <svg viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="Shakil Hosen, home">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span class="brand-name">Shakil Hosen</span>
+      <span class="brand-sep" aria-hidden="true">/</span>
+      <span class="brand-tool">Payments</span>
+    </a>
+    <nav class="nav-links" aria-label="Site navigation">
+      <a href="/">Home</a>
+      <a href="/payments/" class="hide-sm">Payment portal</a>
+    </nav>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between dark and light theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="result" aria-labelledby="result-title">
+      <div class="panel result-card">
+        <div class="status-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
         </div>
-        
-        <h1>Payment Cancelled</h1>
+
+        <h1 id="result-title">Payment Cancelled</h1>
         <p class="subtitle">You have cancelled the payment transaction.</p>
-        
-        <div class="info-box">
-            <p style="margin: 0;">
-                <strong>No charges have been made.</strong> Your payment was cancelled before processing. 
-                You can try again whenever you're ready.
-            </p>
+
+        <div class="alert alert-warn result-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <p><strong>No charges have been made.</strong> Your payment was cancelled before processing. You can try again whenever you're ready.</p>
         </div>
-        
-        <div class="transaction-details">
-            <h3>Transaction Details</h3>
+
+        <div class="details">
+          <h2>Transaction Details</h2>
+          <dl>
             <div class="detail-row">
-                <span class="detail-label">Transaction ID:</span>
-                <span class="detail-value" id="tran_id">-</span>
+              <dt>Transaction ID</dt>
+              <dd class="mono-val"><span class="detail-value" id="tran_id">-</span>
+                <button class="icon-btn copy-btn" type="button" id="copyTran" aria-label="Copy transaction ID" hidden>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+                </button>
+              </dd>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Amount:</span>
-                <span class="detail-value" id="amount">-</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Payment Status:</span>
-                <span class="detail-value" id="status" style="color: #ffc107; font-weight: 600;">Cancelled</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Date & Time:</span>
-                <span class="detail-value" id="datetime">-</span>
-            </div>
+            <div class="detail-row"><dt>Amount</dt><dd><span class="detail-value amount-val" id="amount">-</span></dd></div>
+            <div class="detail-row"><dt>Payment Status</dt><dd><span class="badge badge-warn" id="status">Cancelled</span></dd></div>
+            <div class="detail-row"><dt>Date &amp; Time</dt><dd><span class="detail-value" id="datetime">-</span></dd></div>
+          </dl>
         </div>
-        
-        <p style="color: #6c757d; margin: 20px 0;">
-            If you cancelled by mistake or want to complete the payment, you can start a new transaction.
-        </p>
-        
-        <div>
-            <a href="/payments/" class="btn">Make a Payment</a>
-            <a href="/" class="btn btn-secondary">Go to Home</a>
+
+        <p class="muted small result-note" style="text-align:center">If you cancelled by mistake or want to complete the payment, you can start a new transaction.</p>
+
+        <div class="result-actions">
+          <a href="/payments/" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            Make a Payment
+          </a>
+          <a href="/" class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+            Go to Home
+          </a>
         </div>
-        
-        <footer>
-            <p>&copy; 2025 Shakil Hosen | Powered by SSLCommerz Bangladesh</p>
-            <p style="margin-top: 10px;">
-                Questions? Contact: <a href="mailto:shakil@bnwp.org" style="color: #007bff;">shakil@bnwp.org</a>
-            </p>
-        </footer>
-    </div>
-    
+      </div>
+      <p class="powered">Powered by SSLCommerz Bangladesh &middot; Questions? <a href="mailto:shakil@bnwp.org">shakil@bnwp.org</a></p>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>&copy; <span data-year>2026</span> Shakil Hosen</span>
+    <nav class="footer-links" aria-label="Footer"><a href="/">Home</a><a href="/payments/">Payments</a><a href="/contact.html">Contact</a></nav>
+  </div>
+</footer>
+<script src="/assets/tools.js" defer></script>
+
     <script>
         // Parse URL parameters
         function getUrlParameters() {
@@ -194,24 +137,24 @@
             }
             return data;
         }
-        
+
         // Display transaction details
         function displayTransactionDetails() {
             const params = getUrlParameters();
-            
+
             // Update transaction details
             if (params.tran_id) {
                 document.getElementById('tran_id').textContent = params.tran_id;
             }
-            
+
             if (params.amount) {
                 document.getElementById('amount').textContent = 'BDT ' + parseFloat(params.amount).toFixed(2);
             }
-            
+
             if (params.status) {
                 document.getElementById('status').textContent = params.status;
             }
-            
+
             // Set current date/time
             const now = new Date();
             const datetime = params.tran_date || now.toLocaleString('en-US', {
@@ -222,7 +165,7 @@
                 minute: '2-digit'
             });
             document.getElementById('datetime').textContent = datetime;
-            
+
             // Store cancelled transaction in localStorage for record keeping
             const transactions = JSON.parse(localStorage.getItem('cancelled_transactions') || '[]');
             transactions.push({
@@ -232,9 +175,25 @@
             });
             localStorage.setItem('cancelled_transactions', JSON.stringify(transactions));
         }
-        
+
         // Load transaction details on page load
         window.addEventListener('DOMContentLoaded', displayTransactionDetails);
+    </script>
+    <script>
+        // Presentation helper: copy transaction ID.
+        window.addEventListener('DOMContentLoaded', function () {
+            var id = new URLSearchParams(window.location.search).get('tran_id');
+            var btn = document.getElementById('copyTran');
+            if (!id || !btn || !navigator.clipboard) return;
+            btn.hidden = false;
+            btn.addEventListener('click', function () {
+                navigator.clipboard.writeText(id).then(function () {
+                    if (window.showToast) window.showToast('Transaction ID copied', 'ok');
+                }, function () {
+                    if (window.showToast) window.showToast('Could not copy. Select the ID and copy it manually.', 'error');
+                });
+            });
+        });
     </script>
 </body>
 </html>
